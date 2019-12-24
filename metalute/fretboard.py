@@ -16,32 +16,34 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Freatboard-related facilities.
-
-The scale length or scale of a string instrument is the maximum vibrating length
-of the strings that produce sound, and determines the range of tones that
-a string can produce at a given tension. It's also called string length.
-
-(Operationally, the scale length is measured by dubling the distance between the
-nut and the 12th fret.)
-
-The scale length of an electric guitar affects both its playability and its
-tone. Regarding playability, a shorter scale length allows more compact
-fingering and favors shorter fingers and hand-span. A longer scale allows more
-expanded finger and favors longer fingers and hand-span. With regard to tone, a
-longer scale favors "brightness" or cleaner overtones and more separated
-harmonics versus a shorter scale scale length), which favors "warmth" or more
-muddy overtones.
-
-Practical scale lengths range from 19.4 in (492 mm) to 30 in (762 mm), with the
-"standard" Fender stratocaster sitting at 25.5 in (648 mm).
 """
 
 from enum import Enum
+
+import numpy as np
 
 
 class ScaleLength(Enum):
 
     """Scale length (in mm) for some relevant electric guitars.
+
+    The scale length or scale of a string instrument is the maximum vibrating
+    length of the strings that produce sound, and determines the range of tones
+    that a string can produce at a given tension. It's also called string length.
+
+    (Operationally, the scale length is measured by dubling the distance between
+    the nut and the 12th fret.)
+
+    The scale length of an electric guitar affects both its playability and its
+    tone. Regarding playability, a shorter scale length allows more compact
+    fingering and favors shorter fingers and hand-span. A longer scale allows
+    more expanded finger and favors longer fingers and hand-span. With regard to
+    tone, a longer scale favors "brightness" or cleaner overtones and more
+    separated harmonics versus a shorter scale scale length), which favors
+    "warmth" or more muddy overtones.
+
+    Practical scale lengths range from 19.4 in (492 mm) to 30 in (762 mm), with
+    the "standard" Fender stratocaster sitting at 25.5 in (648 mm).
     """
 
     # Brian May's Red Special, along with Fender Jaguar and Mustang.
@@ -54,3 +56,42 @@ class ScaleLength(Enum):
     PaulRedSmith = 635.
     # Most Fender, Ibanez and Jackson.
     Standard = 648.
+
+
+
+def calculate_fret_positions(scale_length: float, num_frets: int):
+    """Calculate the array of distances of the frets from the nut for a given
+    freatboard configuration (i.e., scale length and number of frets).
+
+    The basic equation relating the fundamental quantities at play for a
+    vibrating string is
+
+    f = \frac{1}{2L} \sqrt{\frac{T}{\varrho}}
+
+    where f is the frequency of the note, L is the length of the string, T is
+    the tension and \varrho the string mass per unit length.
+
+    From the standpoint of calculating the fret position the only thing that we
+    care about is pretty much the fact that, all the rest being unchanged, the
+    pitch of the note is inversely proportional to the length. Since the
+    distance s, measured in semitones, between two frequencies f1 and f2 is
+
+    s(f_1, f_2) = 12 \log_2(\frac{f_2}{f_1})
+
+    d_i = L(1 - 2^{-\frac{i}{2}})
+    """
+    return scale_length * (1. - 2. ** (-np.arange(num_frets + 1) / 12. ))
+
+
+
+class Fretboard:
+
+    """Class representing a guitar/bass freatboard.
+    """
+
+    pass
+
+
+
+if __name__ == '__main__':
+    print(calculate_fret_positions(648., 24))
