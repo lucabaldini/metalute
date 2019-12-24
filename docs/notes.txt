@@ -1,0 +1,29 @@
+** Basic pieces
+
+* support for technical drawings and full-scale blueprints
+* bodies, necks
+* assembly tools
+
+
+** References
+
+** Templates
+
+https://www.electricherald.com/
+https://www.electricherald.com/guitar-templates/ (free guitar templates)
+
+
+** Hardware
+
+https://guitarsandwoods.com/
+
+
+** Tutorials
+
+https://guitarkitworld.com/blogs/resources/guitar-finishing-101
+
+
+** Programs
+
+https://www.freecadweb.org/
+https://www.freecadweb.org/wiki/Power_users_hub (freecad scripting)
