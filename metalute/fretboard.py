@@ -59,39 +59,47 @@ class ScaleLength(Enum):
 
 
 
-def calculate_fret_positions(scale_length: float, num_frets: int):
-    """Calculate the array of distances of the frets from the nut for a given
-    freatboard configuration (i.e., scale length and number of frets).
-
-    The basic equation relating the fundamental quantities at play for a
-    vibrating string is
-
-    f = \frac{1}{2L} \sqrt{\frac{T}{\varrho}}
-
-    where f is the frequency of the note, L is the length of the string, T is
-    the tension and \varrho the string mass per unit length.
-
-    From the standpoint of calculating the fret position the only thing that we
-    care about is pretty much the fact that, all the rest being unchanged, the
-    pitch of the note is inversely proportional to the length. Since the
-    distance s, measured in semitones, between two frequencies f1 and f2 is
-
-    s(f_1, f_2) = 12 \log_2(\frac{f_2}{f_1})
-
-    d_i = L(1 - 2^{-\frac{i}{2}})
-    """
-    return scale_length * (1. - 2. ** (-np.arange(num_frets + 1) / 12. ))
-
-
-
 class Fretboard:
 
     """Class representing a guitar/bass freatboard.
     """
 
-    pass
+    def __init__(self, scale_length: float, num_frets: int) -> None:
+        """Constructor.
+        """
+        self.scale_length = scale_length
+        self.num_frets = num_frets
+        self.fret_positions = Fretboard.calculate_fret_positions(scale_length, num_frets)
 
+    @staticmethod
+    def calculate_fret_positions(scale_length: float, num_frets: int):
+        """Calculate the array of distances of the frets from the nut for a
+        given freatboard configuration (i.e., scale length and number of frets).
 
+        The basic equation relating the fundamental quantities at play for a
+        vibrating string is
 
-if __name__ == '__main__':
-    print(calculate_fret_positions(648., 24))
+        f = \\frac{1}{2L} \\sqrt{\\frac{T}{\\varrho}}
+
+        where f is the frequency of the note, L is the length of the string, T
+        is the tension and \\varrho the string mass per unit length.
+
+        From the standpoint of calculating the fret position the only thing that
+        we care about is pretty much the fact that, all the rest being unchanged,
+        the pitch of the note is inversely proportional to the length. Since the
+        distance s, measured in semitones, between two frequencies f1 and f2 is
+
+        s(f_1, f_2) = 12 \\log_2(\\frac{f_2}{f_1})
+
+        d_i = L(1 - 2^{-\\frac{i}{2}})
+        """
+        return scale_length * (1. - 2. ** (-np.arange(1, num_frets + 1) / 12.))
+
+    def fret_spacing(self):
+        """Return the array of fret spacing values.
+
+        Note that 0. is prepended to the array of positions beforehand, so that
+        the fret spacing array has the same dimension of the fret positions,
+        and the first value is the distance of the first fret from the nut.
+        """
+        return np.diff(self.fret_positions, prepend=0.)

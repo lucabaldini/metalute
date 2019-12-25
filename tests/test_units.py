@@ -19,6 +19,7 @@
 """
 
 import unittest
+
 from metalute.units import inches_to_mm, mm_to_inches
 
 
