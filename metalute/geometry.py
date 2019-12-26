@@ -66,8 +66,8 @@ def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: 
         plt.text(x0 + l, _y, '{}'.format(ascii_uppercase[i]), rotation=90., **fmt)
 
 
-def technical_figure(figure_name: str, width: float, height: float,
-                     margin: float, xdiv: int, ydiv: int):
+def technical_sheet(figure_name: str, width: float, height: float,
+                    margin: float, xdiv: int, ydiv: int):
     """
     """
     plt.figure(figure_name)
@@ -81,14 +81,16 @@ def technical_figure(figure_name: str, width: float, height: float,
     technical_grid(width, height, margin, xdiv, ydiv)
 
 
-def a0figure(figure_name: str):
+def a0sheet(figure_name: str):
     """
     """
-    technical_figure(figure_name, 1189., 841., 30., 16, 12)
+    technical_sheet(figure_name, 1189., 841., 30., 16, 12)
 
 
 
 if __name__ == '__main__':
-    a0figure('Test figure')
-    plt.hlines(0, 0, 500)
+    from metalute.fretboard import Fretboard
+    a0sheet('Test figure')
+    fb = Fretboard()
+    fb.draw(position=(-200., 0.))
     plt.savefig('test.pdf')

@@ -18,12 +18,11 @@
 """Freatboard-related facilities.
 """
 
-from enum import Enum
-
 import numpy as np
+import matplotlib.pyplot as plt
 
 
-class ScaleLength(Enum):
+class ScaleLength:
 
     """Scale length (in mm) for some relevant electric guitars.
 
@@ -64,7 +63,8 @@ class Fretboard:
     """Class representing a guitar/bass freatboard.
     """
 
-    def __init__(self, scale_length: float, num_frets: int, width: float = 60.,
+    def __init__(self, scale_length: float = ScaleLength.Standard,
+                 num_frets: int = 24, width: float = 60.,
                  thickness: float = 12., radius: float = 50.) -> None:
         """Constructor.
         """
@@ -74,6 +74,27 @@ class Fretboard:
         self.thickness = thickness
         self.radius = radius
         self.fret_positions = Fretboard.calculate_fret_positions(scale_length, num_frets)
+
+    def fret_position(self, fret: int) -> float:
+        """
+        """
+        assert fret > 0 and fret <= self.num_frets
+        return self.fret_positions[i - 1]
+
+    def nut_position(self):
+        """
+        """
+        return 0.
+
+    def first_fret_position(self):
+        """
+        """
+        return self.fret_positions[0]
+
+    def last_fret_position(self):
+        """
+        """
+        return self.fret_positions[-1]
 
     @staticmethod
     def calculate_fret_positions(scale_length: float, num_frets: int):
@@ -108,19 +129,17 @@ class Fretboard:
         """
         return np.diff(self.fret_positions, prepend=0.)
 
-    def draw(self):
+    def draw(self, position=(0., 0), padding=0.05):
         """
         """
-        import matplotlib
-        matplotlib.use('TkAgg')
-        import matplotlib.pyplot as plt
-        from metalute.units import inches_to_mm
-        plt.figure()
-        plt.gcf().set_size_inches(16.53, 11.69)
-        plt.gca().set_aspect('equal')
-        w = inches_to_mm(16.53)
-        h = inches_to_mm(11.69)
-        plt.gca().axis([-w /2., w / 2., -h / 2., h / 2.])
-        plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
-        plt.vlines(self.fret_positions, -10, 10)
-        plt.savefig('test.pdf')
+        x0, y0 = position
+        padding *= self.scale_length
+        plt.hlines(y0, self.nut_position() - padding + x0,
+                   self.last_fret_position() + padding + x0, ls='dashed', color='lightgray')
+        plt.hlines(y0 - 10., self.nut_position() + x0, self.last_fret_position() + x0 + 10.)
+        plt.hlines(y0 + 10., self.nut_position() + x0, self.last_fret_position() + x0 + 10.)
+        plt.vlines(self.nut_position() + x0, -10., 10.)
+        plt.vlines(self.last_fret_position() + x0 + 10., -10., 10.)
+        plt.vlines(self.fret_positions + x0, -10., 10.)
+        for i, _x in enumerate(self.fret_positions):
+            plt.text(_x + x0, y0 + 15., '{}'.format(i + 1), size=15, ha='center', va='center')
