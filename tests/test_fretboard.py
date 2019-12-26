@@ -19,8 +19,12 @@
 """
 
 import unittest
+import sys
 
 import numpy as np
+import matplotlib.pyplot as plt
+if sys.flags.interactive:
+    plt.ion()
 
 from metalute.fretboard import Fretboard
 
@@ -78,7 +82,12 @@ class TestFretboard(unittest.TestCase):
         ratio = spacing[:-1] / spacing[1:]
         self.assertTrue(np.allclose(ratio, 2.**(1. / 12.)))
 
+    def test_draw(self):
+        """
+        """
+        self.fretboard.draw()
+
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(exit=not sys.flags.interactive)

@@ -64,11 +64,15 @@ class Fretboard:
     """Class representing a guitar/bass freatboard.
     """
 
-    def __init__(self, scale_length: float, num_frets: int) -> None:
+    def __init__(self, scale_length: float, num_frets: int, width: float = 60.,
+                 thickness: float = 12., radius: float = 50.) -> None:
         """Constructor.
         """
         self.scale_length = scale_length
         self.num_frets = num_frets
+        self.width = width
+        self.thickness = thickness
+        self.radius = radius
         self.fret_positions = Fretboard.calculate_fret_positions(scale_length, num_frets)
 
     @staticmethod
@@ -103,3 +107,14 @@ class Fretboard:
         and the first value is the distance of the first fret from the nut.
         """
         return np.diff(self.fret_positions, prepend=0.)
+
+    def draw(self):
+        """
+        """
+        import matplotlib
+        matplotlib.use('TkAgg')
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.gca().set_aspect('equal')
+        plt.gca().axis([0, 700, -350, 350])
+        plt.vlines(self.fret_positions, -10, 10)
