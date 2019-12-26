@@ -114,7 +114,13 @@ class Fretboard:
         import matplotlib
         matplotlib.use('TkAgg')
         import matplotlib.pyplot as plt
+        from metalute.units import inches_to_mm
         plt.figure()
+        plt.gcf().set_size_inches(16.53, 11.69)
         plt.gca().set_aspect('equal')
-        plt.gca().axis([0, 700, -350, 350])
+        w = inches_to_mm(16.53)
+        h = inches_to_mm(11.69)
+        plt.gca().axis([-w /2., w / 2., -h / 2., h / 2.])
+        plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
         plt.vlines(self.fret_positions, -10, 10)
+        plt.savefig('test.pdf')
