@@ -10,6 +10,10 @@ pyflakes:
 mypy:
 	mypy metalute
 
+clean:
+	rm -f metalute/*.pyc
+	rm -rf */__pycache__
+
 doc:
 	cd docs; make html; cd -
 
