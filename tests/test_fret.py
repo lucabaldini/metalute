@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 if sys.flags.interactive:
     plt.ion()
 
-from metalute.fretboard import Fretboard
+from metalute.fret import Fretboard
 
 
 # Test run from https://www.stewmac.com/FretCalculator.html with 648.000 mm
