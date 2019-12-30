@@ -41,6 +41,17 @@ def rectangle(width: float, height: float, center=(0., 0.), **kwargs):
     plt.gca().add_patch(patch)
 
 
+def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None):
+    """
+    """
+    fmt = dict(color='lightgrey')
+    plt.hlines(y, x1, x2, **fmt)
+    plt.vlines(x1, y - tick, y + tick, **fmt)
+    plt.vlines(x2, y - tick, y + tick, **fmt)
+    dist = abs(x2 - x1)
+    plt.text(0.5 * (x1 + x2), y - pad, '{} mm'.format(dist), size=15., ha='center', va=va)
+
+
 def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: int):
     """
     """
@@ -70,8 +81,8 @@ def technical_sheet(figure_name: str, width: float, height: float,
                     margin: float, xdiv: int, ydiv: int):
     """
     """
-    plt.figure(figure_name)
-    plt.gcf().set_size_inches(mm_to_inches(width), mm_to_inches(height))
+    plt.figure(figure_name, (mm_to_inches(width), mm_to_inches(height)), 50.)
+    #plt.gcf().set_size_inches(mm_to_inches(width), mm_to_inches(height))
     plt.gca().set_aspect('equal')
     plt.gca().axis([-width / 2., width / 2., -height / 2., height / 2.])
     plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
@@ -89,8 +100,9 @@ def a0sheet(figure_name: str):
 
 
 if __name__ == '__main__':
-    from metalute.fretboard import Fretboard
+    from metalute.fret import Fretboard
     a0sheet('Test figure')
     fb = Fretboard()
-    fb.draw(position=(-200., 0.))
-    plt.savefig('test.pdf')
+    fb.draw(position=(200., 0.))
+    plt.savefig('fretboard.pdf')
+    #plt.show()
