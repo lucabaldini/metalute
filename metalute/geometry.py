@@ -49,7 +49,9 @@ def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None):
     plt.vlines(x1, y - tick, y + tick, **fmt)
     plt.vlines(x2, y - tick, y + tick, **fmt)
     dist = abs(x2 - x1)
-    plt.text(0.5 * (x1 + x2), y - pad, '{} mm'.format(dist), size=15., ha='center', va=va)
+    txt = '{:.2f} mm'.format(dist)
+    fmt = dict(size=15., ha='center', va=va)
+    plt.text(0.5 * (x1 + x2), y - pad, txt, **fmt)
 
 
 def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: int):
