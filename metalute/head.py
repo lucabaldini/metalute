@@ -221,4 +221,90 @@ _x = np.linspace(0, 20, 100)
 plt.plot(_x, const(_x, *popt))
 
 plt.axis([0, 200, -60, 60])
+
+
+def circle(x0, y0, radius, **kwargs):
+    """
+    """
+    circle = plt.Circle((x0, y0), radius, fill=False, **kwargs)
+    plt.gca().add_patch(circle)
+
+def circle_arc(x0, y0, radius, theta1=0., theta2=360.):
+    """
+    """
+    arc = matplotlib.patches.Arc((x0, y0), 2. * radius, 2. * radius, 0.,
+          theta1, theta2, fill=False)
+    plt.gca().add_patch(arc)
+
+
+
+plt.figure()
+plt.gca().set_aspect('equal')
+#plt.plot(x, y, '.')
+plt.axis([-10, 200, -60, 60])
+
+w = inches_to_mm(1.650)
+d1 = 8.06
+r1 = 15.23
+phi1 = 20.0
+r2 = 7.20
+phi2 = 17.0
+d2 = 143.00
+r3 = 25.50
+phi3 = 70.0
+r4 = 8.45
+phi4 = 7.5
+r5 = 280.40
+phi5 = 15.5
+r6 = 169.60
+phi6 = 2.3 # This is not independent from phi7
+r7 = 50.50
+d3 = 6.00
+phi7 = 27.5 # This should be calculated
+
+plt.hlines(0.5 * w, 0., d1)
+#
+x0 = d1
+y0 = r1 + 0.5 * w
+circle(x0, y0, r1, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r1, -90., -phi1)
+#
+x0 += (r1 + r2) * np.cos(np.radians(phi1))
+y0 -= (r1 + r2) * np.sin(np.radians(phi1))
+circle(x0, y0, r2, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r2, 90. - phi2, 180. - phi1)
+#
+x0 += r2 * np.sin(np.radians(phi2))
+y0 += r2 * np.cos(np.radians(phi2))
+x1 = x0 + d2 * np.cos(np.radians(phi2))
+y1 = y0 - d2 * np.sin(np.radians(phi2))
+plt.plot([x0, x1], [y0, y1], color='black', lw=1.)
+#
+x0 = x1 - r3 * np.sin(np.radians(phi2))
+y0 = y1 - r3 * np.cos(np.radians(phi2))
+circle(x0, y0, r3, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r3, -90. - phi3, 90. - phi2)
+#
+x0 -= (r3 + r4) * np.sin(np.radians(phi3))
+y0 -= (r3 + r4) * np.cos(np.radians(phi3))
+circle(x0, y0, r4, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r4, 90. - phi3, 90. + phi4)
+#
+x0 += (-r4 + r5) * np.sin(np.radians(phi4))
+y0 -= (-r4 + r5) * np.cos(np.radians(phi4))
+circle(x0, y0, r5, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r5, 90. + phi4, 90. + phi5)
+#
+x0 -= (r5 + r6) * np.sin(np.radians(phi5))
+y0 += (r5 + r6) * np.cos(np.radians(phi5))
+circle(x0, y0, r6, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r6, -90. + phi6, -90. + phi5)
+#
+x0 = d3
+y0 = -0.5 * w - r7
+circle(x0, y0, r7, color='lightgray', ls='dashed')
+circle_arc(x0, y0, r7, phi7, 90.)
+#
+plt.hlines(-0.5 * w, 0., d3)
+
 plt.show()
