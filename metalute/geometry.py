@@ -20,22 +20,9 @@
 
 from string import ascii_uppercase
 
-# We have to sort this out---the default is not working on my Fedora 30.
-import matplotlib
-matplotlib.use('TkAgg')
-
-# This could be factored out in a different module.
-def _set_rc_param(key, value):
-    """
-    """
-    matplotlib.rcParams[key] = value
-
-_set_rc_param('lines.linewidth', 1.)
-
-
 import numpy as np
-import matplotlib.pyplot as plt
 
+from metalute.matplotlib_ import matplotlib, plt
 from metalute.units import mm_to_inches
 
 
@@ -259,7 +246,6 @@ def technical_sheet(figure_name: str, width: float, height: float,
     """
     """
     plt.figure(figure_name, (mm_to_inches(width), mm_to_inches(height)), 50.)
-    #plt.gcf().set_size_inches(mm_to_inches(width), mm_to_inches(height))
     plt.gca().set_aspect('equal')
     plt.gca().axis([-width / 2., width / 2., -height / 2., height / 2.])
     plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
