@@ -222,7 +222,6 @@ plt.axis([0, 200, -60, 60])
 
 
 drafting_figure('Fender headstock', 'A3')
-#plt.plot(x, y, '.')
 
 w = inches_to_mm(1.650)
 d1 = 8.06
