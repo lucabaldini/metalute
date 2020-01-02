@@ -24,21 +24,178 @@ from string import ascii_uppercase
 import matplotlib
 matplotlib.use('TkAgg')
 
+# This could be factored out in a different module.
+def _set_rc_param(key, value):
+    """
+    """
+    matplotlib.rcParams[key] = value
+
+_set_rc_param('lines.linewidth', 1.)
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 from metalute.units import mm_to_inches
 
 
-def rectangle(width: float, height: float, center=(0., 0.), **kwargs):
+class GeometricalEntity:
+
+    """Base class for concrete geometrical entities.
+
+    This is a base class from which all geometrical entities defined in this
+    module (such as points, lines and shapes) inherit from. It encapsulates the
+    properties (e.g., name and label) that are common to all such entities.
+
+    Parameters
+    ---------
+    name : str (optional)
+        The unique name of the entity
+
+    label : str (optional)
+        A text label expressing the intent of the entity
+    """
+
+    def __init__(self, name: str = None, label: str = None) -> None:
+        """Constructor.
+        """
+        self.name = name
+        self.label = label
+
+    def text_info(self) -> str:
+        """Basic textual information for the entity.
+
+        This is intended to be derived by the subclasses to provide specific
+        information (e.g., the coordinates of a given point) and is used by the
+        __str__ dunder method defined in this base class.
+        """
+        raise NotImplementedError
+
+    def __str__(self) -> str:
+        """String formatting.
+        """
+        text = self.name or self.__class__.__name__
+        text = '{}: {}'.format(text, self.text_info())
+        if self.label is not None:
+            text = '{} [{}]'.format(text, self.label)
+        return text
+
+
+
+class Point(GeometricalEntity):
+
+    """Small utility class representing a point in two dimensions.
+
+    Parameters
+    ---------
+    x : float
+        The x coordinate of the point
+
+    y : float
+        The y coordinate of the point
+
+    name : str (optional)
+        The unique name of the point
+
+    label : str (optional)
+        A text label expressing the intent of the point
+    """
+
+    def __init__(self, x: float, y: float, name: str = None, label: str = None):
+        """Constructor.
+        """
+        self.x = x
+        self.y = y
+        super().__init__(name, label)
+
+    def text_info(self) -> str:
+        """Overloaded method.
+        """
+        return '({:.2f}, {:.2f})'.format(self.x, self.y)
+
+    def move(self, distance, direction):
+        """
+        """
+        pass
+
+    def draw(self, name: bool = True, ha: str = 'left', va: str = 'bottom', **kwargs):
+        """Draw the point.
+        """
+        kwargs.setdefault('color', 'black')
+        kwargs.setdefault('markersize', 4.)
+        plt.plot(self.x, self.y, 'o', **kwargs)
+        if name and self.name is not None:
+            kwargs.pop('markersize')
+            plt.text(self.x, self.y, self, ha=ha, va=va, **kwargs)
+
+
+
+class Segment(GeometricalEntity):
+
+    """
+    """
+
+    pass
+
+
+
+
+def line(x, y, **kwargs):
+    """
+    """
+    l = matplotlib.lines.Line2D(x, y, **kwargs)
+    plt.gca().add_line(l)
+
+
+def rectangle(center, width: float, height: float, **kwargs):
     """Draw a rectangle with specified width, height and center.
     """
+    kwargs.setdefault('fill', False)
     x, y = center
     x -= width / 2.
     y -= height / 2.
     pos = (x, y)
-    patch = matplotlib.patches.Rectangle(pos, width, height, fill=False, **kwargs)
+    patch = matplotlib.patches.Rectangle(pos, width, height, **kwargs)
     plt.gca().add_patch(patch)
+
+
+def circle(center, radius, **kwargs):
+    """Draw a circle.
+    """
+    kwargs.setdefault('fill', False)
+    circle = plt.Circle(center, radius, **kwargs)
+    plt.gca().add_patch(circle)
+
+
+def circle_arc_construction(center, radius: float, phi1: float = 0.,
+                            phi2: float = 360., radii: bool = False, **kwargs):
+    """Draw all the construction elements for a circle arc.
+    """
+    kwargs.setdefault('fill', False)
+    kwargs.setdefault('color', 'lightgray')
+    kwargs.setdefault('ls', 'dashed')
+    circle(center, radius, **kwargs)
+    if radii:
+        kwargs.pop('fill')
+        x0, y0 = center
+        dx = radius * np.cos(np.radians(phi1))
+        dy = radius * np.sin(np.radians(phi1))
+        line([x0, x0 + dx], [y0, y0 + dy], **kwargs)
+        dx = radius * np.cos(np.radians(phi2))
+        dy = radius * np.sin(np.radians(phi2))
+        line([x0, x0 + dx], [y0, y0 + dy], **kwargs)
+
+
+def circle_arc(center, radius: float, phi1: float = 0., phi2: float = 360.,
+               construction: bool = False, **kwargs):
+    """Draw a circle arc.
+    """
+    if construction:
+        circle_arc_construction(center, radius, phi1, phi2, **kwargs)
+    kwargs.setdefault('fill', False)
+    d = 2 * radius
+    arc = matplotlib.patches.Arc(center, d, d, 0., phi1, phi2, **kwargs)
+    plt.gca().add_patch(arc)
 
 
 def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None):
