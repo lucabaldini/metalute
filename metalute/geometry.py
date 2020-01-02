@@ -198,20 +198,38 @@ def circle_arc(center, radius: float, phi1: float = 0., phi2: float = 360.,
     plt.gca().add_patch(arc)
 
 
-def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None):
+def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None, text_size: int = 15):
     """
     """
+    if va == 'bottom':
+        pad = -pad
     fmt = dict(color='lightgrey')
     plt.hlines(y, x1, x2, **fmt)
     plt.vlines(x1, y - tick, y + tick, **fmt)
     plt.vlines(x2, y - tick, y + tick, **fmt)
     dist = abs(x2 - x1)
     txt = '{:.2f} mm'.format(dist)
-    fmt = dict(size=15., ha='center', va=va)
+    fmt = dict(size=text_size, ha='center', va=va)
     plt.text(0.5 * (x1 + x2), y - pad, txt, **fmt)
 
 
-def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: int):
+def vdim(x, y1, y2, tick=2., ha='left', pad=2., label=None, text_size: int = 15):
+    """
+    """
+    if ha == 'right':
+        pad = -pad
+    fmt = dict(color='lightgrey')
+    plt.vlines(x, y1, y2, **fmt)
+    plt.hlines(y1, x - tick, x + tick, **fmt)
+    plt.hlines(y2, x - tick, x + tick, **fmt)
+    dist = abs(y2 - y1)
+    txt = '{:.2f} mm'.format(dist)
+    fmt = dict(size=text_size, ha=ha, va='center', rotation=90.)
+    plt.text(x + pad, 0.5 * (y1 + y2), txt, **fmt)
+
+
+def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: int,
+                   text_size: int = 25):
     """
     """
     l = margin / 2.
@@ -227,7 +245,7 @@ def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: 
     # Draw the letter and numbers.
     dx = x0 / xdiv
     dy = y0 / ydiv
-    fmt = dict(size=25, ha='center', va='center')
+    fmt = dict(size=text_size, ha='center', va='center')
     for i, _x in enumerate(np.flip((x + dx)[:-1])):
         plt.text(_x, -y0 - l, '{}'.format(i + 1), **fmt)
         plt.text(_x, y0 + l, '{}'.format(i + 1), rotation=90., **fmt)
@@ -237,7 +255,7 @@ def technical_grid(width: float, height: float, margin: float, xdiv: int, ydiv: 
 
 
 def technical_sheet(figure_name: str, width: float, height: float,
-                    margin: float, xdiv: int, ydiv: int):
+                    margin: float, xdiv: int, ydiv: int, text_size: int = 25):
     """
     """
     plt.figure(figure_name, (mm_to_inches(width), mm_to_inches(height)), 50.)
@@ -247,14 +265,21 @@ def technical_sheet(figure_name: str, width: float, height: float,
     plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
     w = width - 2. * margin
     h = height - 2. * margin
-    rectangle(w, h)
-    technical_grid(width, height, margin, xdiv, ydiv)
+    rectangle((0., 0.), w, h)
+    technical_grid(width, height, margin, xdiv, ydiv, text_size)
 
 
 def a0sheet(figure_name: str):
     """
     """
-    technical_sheet(figure_name, 1189., 841., 30., 16, 12)
+    technical_sheet(figure_name, 1189., 841., 30., 16, 12, 25)
+
+
+def a3sheet(figure_name: str):
+    """
+    """
+    technical_sheet(figure_name, 420., 297., 15., 5, 4, 10)
+
 
 
 
