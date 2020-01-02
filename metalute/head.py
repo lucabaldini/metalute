@@ -18,16 +18,13 @@
 """Headstock-related facilities.
 """
 
-# We have to sort this out---the default is not working on my Fedora 30.
-import matplotlib
-matplotlib.use('TkAgg')
 
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.interpolate import splprep, splev
-from scipy.optimize import curve_fit, leastsq
+#from scipy.interpolate import splprep, splev
+#from scipy.optimize import curve_fit, leastsq
 
 from metalute.units import inches_to_mm
+from metalute.matplotlib_ import plt, drafting_figure
 from metalute.geometry import Point, circle, circle_arc, circle_arc_construction
 
 DATA = """
@@ -224,10 +221,8 @@ plt.axis([0, 200, -60, 60])
 """
 
 
-plt.figure()
-plt.gca().set_aspect('equal')
+drafting_figure('Fender headstock', 'A3')
 #plt.plot(x, y, '.')
-plt.axis([-10., 200., -75., 75.])
 
 w = inches_to_mm(1.650)
 d1 = 8.06

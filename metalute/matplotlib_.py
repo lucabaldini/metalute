@@ -97,6 +97,8 @@ def drafting_figure(name: str, size: str, orientation: str = 'Landscape',
     plt.gca().set_aspect('equal')
     plt.gca().axis([-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height])
     plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
+    plt.xticks([])
+    plt.yticks([])
     # Draw a rectangle delimiting the drafting area.
     margin *= max(width, height)
     w = width - 2. * margin
