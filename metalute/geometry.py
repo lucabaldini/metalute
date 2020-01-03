@@ -127,7 +127,7 @@ class Point(GeometricalEntity):
         plt.plot(x, y, 'o', **kwargs)
         if name and (self.name is not None):
             kwargs.pop('markersize')
-            plt.text(x, y, self.name, ha=ha, va=va, **kwargs)
+            plt.text(x, y, ' {}'.format(self.name), ha=ha, va=va, **kwargs)
 
 
 
