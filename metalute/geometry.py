@@ -88,41 +88,111 @@ class Point(GeometricalEntity):
         A text label expressing the intent of the point
     """
 
-    def __init__(self, x: float, y: float, name: str = None, label: str = None):
+    def __init__(self, x: float = 0., y: float = 0., name: str = None, label: str = None):
         """Constructor.
         """
         self.x = x
         self.y = y
         super().__init__(name, label)
 
+    def __add__(self, other):
+        """
+        """
+        return self.__class__(self.x + other.x, self.y + other.y)
+
+    def xy(self):
+        """
+        """
+        return (self.x, self.y)
+
     def text_info(self) -> str:
         """Overloaded method.
         """
         return '({:.2f}, {:.2f})'.format(self.x, self.y)
 
-    def move(self, distance, direction):
+    def move(self, dist: float, phi: float, name: str = None, label: str = None):
         """
         """
-        pass
+        x = self.x + dist * np.cos(np.radians(phi))
+        y = self.y + dist * np.sin(np.radians(phi))
+        return Point(x, y, name, label)
 
-    def draw(self, name: bool = True, ha: str = 'left', va: str = 'bottom', **kwargs):
+    def draw(self, offset, name: bool = True, ha: str = 'left', va: str = 'bottom', **kwargs):
         """Draw the point.
         """
         kwargs.setdefault('color', 'black')
         kwargs.setdefault('markersize', 4.)
-        plt.plot(self.x, self.y, 'o', **kwargs)
-        if name and self.name is not None:
+        x = self.x + offset.x
+        y = self.y + offset.y
+        plt.plot(x, y, 'o', **kwargs)
+        if name and (self.name is not None):
             kwargs.pop('markersize')
-            plt.text(self.x, self.y, self, ha=ha, va=va, **kwargs)
+            plt.text(x, y, self.name, ha=ha, va=va, **kwargs)
 
 
 
-class Segment(GeometricalEntity):
+class PolyLine(GeometricalEntity):
 
     """
     """
 
-    pass
+    def __init__(self, *points, name: str = None, label: str = None):
+        """Constructor.
+        """
+        self.points = points
+        super().__init__(name, label)
+
+    def draw(self, offset, **kwargs):
+        """
+        """
+        x = [point.x + offset.x for point in self.points]
+        y = [point.y + offset.y for point in self.points]
+        line = matplotlib.lines.Line2D(x, y, **kwargs)
+        plt.gca().add_line(line)
+
+
+
+class CircleArc(GeometricalEntity):
+
+    """
+    """
+
+    def __init__(self, center, radius: float, phi1: float = 0., phi2: float = 360.):
+        """Constructor.
+        """
+        self.center = center
+        self.radius = radius
+        self.phi1 = phi1
+        self.phi2 = phi2
+
+    def draw(self, offset, full_circle: bool = True, radii: bool = True, **kwargs):
+        """
+        """
+        xy = (self.center + offset).xy()
+        # This needs to go first, as the construction is in background.
+        if full_circle:
+            fmt = dict(ls='dashed', fill=False, color='lightgrey')
+            circle = plt.Circle(xy, self.radius, **fmt, **kwargs)
+            plt.gca().add_patch(circle)
+        if radii:
+            fmt = dict(ls='dashed', color='lightgrey')
+            p1 = self.center.move(self.radius, self.phi1)
+            p2 = self.center.move(self.radius, self.phi2)
+            PolyLine(p1, self.center, p2).draw(offset, **fmt)
+            d = min(0.80 * self.radius, 10.)
+            arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **fmt, **kwargs)
+            plt.gca().add_patch(arc)
+        # And now the actual arc.
+        d = 2 * self.radius
+        arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **kwargs)
+        plt.gca().add_patch(arc)
+
+
+
+
+
+
+
 
 
 

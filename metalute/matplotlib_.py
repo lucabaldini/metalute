@@ -63,6 +63,17 @@ def mm_to_points(mm: float, ppi: float = 72.):
     return ppi * mm_to_inches(mm)
 
 
+def basic_setup():
+    """System wide matplotlib configuration.
+    """
+    _set('lines.color', 'black')
+    _set('patch.facecolor', 'black')
+    #_set('patch.fill', False)
+    #_set('patch.force_edgecolor', True)
+
+basic_setup()
+
+
 def setup_page(size: str, orientation: str = 'Landscape', dpi: float = 100.,
                text_size: float = 3., line_width: float = 0.25):
     """Basic figure setup for a given paper size.
