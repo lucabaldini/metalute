@@ -182,6 +182,7 @@ class CircleArc(GeometricalEntity):
             d = min(0.80 * self.radius, 10.)
             arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **fmt, **kwargs)
             plt.gca().add_patch(arc)
+            self.center.draw(offset, color='lightgrey')
         # And now the actual arc.
         d = 2 * self.radius
         arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **kwargs)

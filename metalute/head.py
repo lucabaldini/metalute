@@ -284,7 +284,8 @@ class FenderHeadstock(Headstock):
                       'r3': 25.50,
                       'phi3': 233.0,
                       'r4': 8.45,
-                      'phi4': 62.5
+                      'phi4': 62.5,
+                      'r5': 280.40
                       }
 
     def construct(self):
@@ -317,10 +318,10 @@ class FenderHeadstock(Headstock):
         phi2 = phi1 + self.phi4
         arc4 = CircleArc(c4, self.r4, phi1, phi2)
         p7 = c4.move(self.r4, phi2, 'p7')
-
+        #c5 = p7.move()
         # Add all the points and patches to the headstock.
         self.add_points(p1, p2, p3, p4, p5, p6, p7)
-        self.add_points(anchor, c1, c2, c3, c4)
+        #self.add_points(anchor, c1, c2, c3, c4)
         self.add_patches(line1, arc1, arc2, line2, arc3, arc4)
 
 
