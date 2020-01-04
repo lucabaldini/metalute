@@ -100,6 +100,11 @@ class Point(GeometricalEntity):
         """
         return self.__class__(self.x + other.x, self.y + other.y)
 
+    def __sub__(self, other):
+        """
+        """
+        return self.__class__(self.x - other.x, self.y - other.y)
+
     def xy(self):
         """
         """

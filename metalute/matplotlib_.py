@@ -103,7 +103,7 @@ def drafting_figure(name: str, size: str, orientation: str = 'Landscape',
     # Setup the page.
     width, height, dpi = setup_page(size, orientation, dpi, text_size, line_width)
     # Create an empty figure.
-    plt.figure()
+    plt.figure(name)
     # Setup the axes.
     plt.gca().set_aspect('equal')
     plt.gca().axis([-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height])
