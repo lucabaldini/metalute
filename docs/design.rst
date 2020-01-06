@@ -83,3 +83,7 @@ offers pickups in two different sizes:
 
 * standard spacing, at 48.64 mm E-to-E;
 * F spacing, at 51.05 mm E-to-E.
+
+
+The freatboard
+--------------
