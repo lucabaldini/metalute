@@ -39,17 +39,26 @@ class TestHead(unittest.TestCase):
     """Unit tests for the head module.
     """
 
-    def load_fender_data(self):
+    def load_strato_data(self):
         """
         """
         file_path = os.path.join(TEST_DATA_FOLDER, 'headstock_fender_profile.txt')
         x, y = np.loadtxt(file_path, unpack=True, delimiter=',')
-        x -= x.min()
-        scale = x.max() / inches_to_mm(7.313)
-        x /= scale
-        y /= -scale
-        y -= 0.5 * (y[0] + y[-1])
-        return x, y
+        scale = (x.max() - x.min()) / inches_to_mm(7.313)
+        xoffset = x.min()
+        yoffset = 0.5 * (y[0] + y[-1])
+
+        def to_physical_coordinates(x, y):
+            """
+            """
+            return (x - xoffset) / scale, -(y - yoffset) / scale
+
+        x, y = to_physical_coordinates(x, y)
+
+        file_path = os.path.join(TEST_DATA_FOLDER, 'headstock_fender_holes.txt')
+        xh, yh = np.loadtxt(file_path, unpack=True, delimiter=',')
+        xh, yh = to_physical_coordinates(xh, yh)
+        return x, y, xh, yh
 
     def test_fender_construction(self) -> None:
         """.
@@ -66,10 +75,14 @@ class TestHead(unittest.TestCase):
         headstock = FenderHeadstock()
         offset = Point(-80., 10.)
         headstock.draw_top(offset)
-        x, y = self.load_fender_data()
+        x, y, xh, yh = self.load_strato_data()
         x += offset.x
         y += offset.y
         plt.plot(x, y, 'o')
+        xh += offset.x
+        yh += offset.y
+        print(xh, yh)
+        plt.plot(xh, yh, 'o')
 
 
 

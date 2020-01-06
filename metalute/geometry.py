@@ -39,15 +39,15 @@ class GeometricalEntity:
     name : str (optional)
         The unique name of the entity
 
-    label : str (optional)
+    intent : str (optional)
         A text label expressing the intent of the entity
     """
 
-    def __init__(self, name: str = None, label: str = None) -> None:
+    def __init__(self, name: str = None, intent: str = None) -> None:
         """Constructor.
         """
         self.name = name
-        self.label = label
+        self.intent = intent
 
     def text_info(self) -> str:
         """Basic textual information for the entity.
@@ -63,8 +63,8 @@ class GeometricalEntity:
         """
         text = self.name or self.__class__.__name__
         text = '{}: {}'.format(text, self.text_info())
-        if self.label is not None:
-            text = '{} [{}]'.format(text, self.label)
+        if self.intent is not None:
+            text = '{} [{}]'.format(text, self.intent)
         return text
 
 
@@ -84,16 +84,16 @@ class Point(GeometricalEntity):
     name : str (optional)
         The unique name of the point
 
-    label : str (optional)
+    intent : str (optional)
         A text label expressing the intent of the point
     """
 
-    def __init__(self, x: float = 0., y: float = 0., name: str = None, label: str = None):
+    def __init__(self, x: float = 0., y: float = 0., name: str = None, intent: str = None):
         """Constructor.
         """
         self.x = x
         self.y = y
-        super().__init__(name, label)
+        super().__init__(name, intent)
 
     def __add__(self, other):
         """
@@ -115,12 +115,12 @@ class Point(GeometricalEntity):
         """
         return '({:.2f}, {:.2f})'.format(self.x, self.y)
 
-    def move(self, dist: float, phi: float, name: str = None, label: str = None):
+    def move(self, dist: float, phi: float, name: str = None, intent: str = None):
         """
         """
         x = self.x + dist * np.cos(np.radians(phi))
         y = self.y + dist * np.sin(np.radians(phi))
-        return Point(x, y, name, label)
+        return Point(x, y, name, intent)
 
     def draw(self, offset, name: bool = True, ha: str = 'left', va: str = 'bottom', **kwargs):
         """Draw the point.
@@ -141,11 +141,11 @@ class PolyLine(GeometricalEntity):
     """
     """
 
-    def __init__(self, *points, name: str = None, label: str = None):
+    def __init__(self, *points, name: str = None, intent: str = None):
         """Constructor.
         """
         self.points = points
-        super().__init__(name, label)
+        super().__init__(name, intent)
 
     def draw(self, offset, **kwargs):
         """
@@ -157,18 +157,90 @@ class PolyLine(GeometricalEntity):
 
 
 
-class CircleArc(GeometricalEntity):
+class Circle(GeometricalEntity):
 
     """
     """
 
-    def __init__(self, center, radius: float, phi1: float = 0., phi2: float = 360.):
+    def __init__(self, center, radius: float, name: str = None, intent: str = None):
         """Constructor.
         """
+        super().__init__(name, intent)
         self.center = center
         self.radius = radius
+
+    def diameter(self):
+        """
+        """
+        return 2. * self.radius
+
+    def draw(self, offset, **kwargs):
+        """
+        """
+        xy = (self.center + offset).xy()
+        circle = matplotlib.patches.Circle(xy, self.radius, fill=False, **kwargs)
+        plt.gca().add_patch(circle)
+
+
+
+class Cross(Circle):
+
+    """
+    """
+
+    def draw(self, offset, **kwargs):
+        """
+        """
+        p0 = self.center.move(self.radius, 180.)
+        p1 = self.center.move(self.radius, 0.)
+        p2 = self.center.move(self.radius, 90.)
+        p3 = self.center.move(self.radius, -90.)
+        PolyLine(p0, p1).draw(offset, **kwargs)
+        PolyLine(p2, p3).draw(offset, **kwargs)
+
+
+
+class Hole(Circle):
+
+    """
+    """
+
+    def __init__(self, center, diameter: float, name: str = None, intent: str = None):
+        """
+        """
+        super().__init__(center, 0.5 * diameter, name, intent)
+
+    def draw(self, offset, **kwargs):
+        """
+        """
+        super().draw(offset, **kwargs)
+        kwargs.update(color='black')
+        Cross(self.center, 1.5 * self.radius).draw(offset, **kwargs)
+
+
+
+class CircleArc(Circle):
+
+    """
+    """
+
+    def __init__(self, center, radius: float, phi1: float = 0., phi2: float = 360.,
+                 name: str = None, intent: str = None):
+        """Constructor.
+        """
+        super().__init__(center, radius, name, intent)
         self.phi1 = phi1
         self.phi2 = phi2
+
+    def start_point(self, name=None, intent=None):
+        """
+        """
+        return self.center.move(self.radius, self.phi1, name, intent)
+
+    def end_point(self, name=None, intent=None):
+        """
+        """
+        return self.center.move(self.radius, self.phi2, name, intent)
 
     def draw(self, offset, full_circle: bool = True, radii: bool = True, **kwargs):
         """
@@ -181,8 +253,8 @@ class CircleArc(GeometricalEntity):
             plt.gca().add_patch(circle)
         if radii:
             fmt = dict(ls='dashed', color='lightgrey')
-            p1 = self.center.move(self.radius, self.phi1)
-            p2 = self.center.move(self.radius, self.phi2)
+            p1 = self.start_point()
+            p2 = self.end_point()
             PolyLine(p1, self.center, p2).draw(offset, **fmt)
             d = min(0.80 * self.radius, 10.)
             arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **fmt, **kwargs)
@@ -261,7 +333,7 @@ def circle_arc(center, radius: float, phi1: float = 0., phi2: float = 360.,
     plt.gca().add_patch(arc)
 
 
-def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None, text_size: int = 15):
+def hdim(y, x1, x2, tick=2., va='top', pad=2., intent=None, text_size: int = 15):
     """
     """
     if va == 'bottom':
@@ -276,7 +348,7 @@ def hdim(y, x1, x2, tick=2., va='top', pad=2., label=None, text_size: int = 15):
     plt.text(0.5 * (x1 + x2), y - pad, txt, **fmt)
 
 
-def vdim(x, y1, y2, tick=2., ha='left', pad=2., label=None, text_size: int = 15):
+def vdim(x, y1, y2, tick=2., ha='left', pad=2., intent=None, text_size: int = 15):
     """
     """
     if ha == 'right':
