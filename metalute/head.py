@@ -39,30 +39,34 @@ class Headstock:
         self.params = self.DEFAULT_PARAMS.copy()
         self.params.update(**kwargs)
         self.anchor = Point(0., 0., 'anchor')
-        self.points = []
-        self.patches = []
-        self.holes = []
+        self.point_dict = {}
+        self.patch_dict = {}
+        self.hole_list = []
         self.construct()
 
     def __getattr__(self, key):
-        """
+        """Remove me---it makes debug harder.
         """
         return self.params[key]
 
     def add_points(self, *points):
         """
         """
-        self.points += points
+        for point in points:
+            if point.name is not None:
+                self.point_dict[point.name] = point
 
     def add_patches(self, *patches):
         """
         """
-        self.patches += patches
+        for patch in patches:
+            if patch.name is not None:
+                self.patch_dict[patch.name] = patch
 
     def add_holes(self, *holes):
         """
         """
-        self.holes += holes
+        self.hole_list += holes
 
     def construct(self):
         """
@@ -80,15 +84,15 @@ class Headstock:
         """
         """
         self.draw_top_axis(offset)
-        for patch in self.patches:
+        for patch in self.patch_dict.values():
             if isinstance(patch, CircleArc):
                 patch.draw(offset, full_circle=construction, radii=construction)
             else:
                 patch.draw(offset)
-        for hole in self.holes:
+        for hole in self.hole_list:
             hole.draw(offset)
         if points:
-            for point in self.points:
+            for point in self.point_dict.values():
                 point.draw(offset)
 
 
@@ -123,7 +127,7 @@ class FenderHeadstock(Headstock):
         # Starting horizontal segment.
         p1 = self.anchor.move(0.5 * self.w, 90., 'p1')
         p2 = p1.move(self.d1, 0., 'p2')
-        line1 = PolyLine(p1, p2)
+        line1 = PolyLine(p1, p2, name='line1')
         # First circle.
         c1 = p2.move(self.r1, 90., 'c1')
         arc1 = CircleArc(c1, self.r1, -90., self.phi1 - 90., 'arc1')
@@ -134,7 +138,7 @@ class FenderHeadstock(Headstock):
         p4 = arc2.start_point('p4')
         # Long straight segment.
         p5 = p4.move(self.d2, arc2.phi1 - 90., 'p5')
-        line2 = PolyLine(p4, p5)
+        line2 = PolyLine(p4, p5, name='line2')
         # Third circle.
         c3 = p5.move(self.r3, arc2.phi1 - 180., 'c3')
         arc3 = CircleArc(c3, self.r3, arc2.phi1 - self.phi3, arc2.phi1, 'arc3')
@@ -154,12 +158,12 @@ class FenderHeadstock(Headstock):
 
         p11 = self.anchor.move(0.5 * self.w, -90., 'p11')
         p10 = p11.move(self.d3, 0., 'p10')
-        line3 = PolyLine(p11, p10)
+        line3 = PolyLine(p11, p10, name='line3')
         c7 = p10.move(self.r7, -90, 'c7')
         dx, dy = (p9 - c7).xy()
         phi1 = np.degrees(np.arctan2(dy, dx))
         phi2 = 90.
-        arc7 = CircleArc(c7, self.r7, phi1, phi2)
+        arc7 = CircleArc(c7, self.r7, phi1, phi2, 'arc7')
 
         # Add all the points and patches to the headstock.
         self.add_points(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)
