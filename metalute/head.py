@@ -97,7 +97,7 @@ class Headstock:
 
 
 
-class FenderHeadstock(Headstock):
+class StratoHeadstock(Headstock):
 
     """
     """
@@ -117,8 +117,7 @@ class FenderHeadstock(Headstock):
                       'phi5': 8.0,
                       'r6': 169.60,
                       'phi6': 13.2,
-                      'r7': 50.50,
-                      'd3': 6.00 # This can be calculated.
+                      'r7': 50.50
                       }
 
     def construct(self):
@@ -155,16 +154,15 @@ class FenderHeadstock(Headstock):
         c6 = p8.move(self.r6, arc5.phi2, 'c6')
         arc6 = CircleArc(c6, self.r6, 180. + arc5.phi2 - self.phi6, 180. + arc5.phi2, 'arc6')
         p9 = arc6.start_point('p9')
-
+        # Last circle---here things are a little bit tricky :-)
+        phi = np.degrees(np.arccos(1. - (-0.5 * self.w - p9.y) / self.r7))
+        dx = self.r7 * np.sin(np.radians(phi))
+        c7 = Point(p9.x - dx, -0.5 * self.w - self.r7, 'c7')
+        arc7 = CircleArc(c7, self.r7, 90. - phi, 90., 'arc7')
+        p10 = arc7.end_point('p10')
+        # And finally: close the loop.
         p11 = self.anchor.move(0.5 * self.w, -90., 'p11')
-        p10 = p11.move(self.d3, 0., 'p10')
         line3 = PolyLine(p11, p10, name='line3')
-        c7 = p10.move(self.r7, -90, 'c7')
-        dx, dy = (p9 - c7).xy()
-        phi1 = np.degrees(np.arctan2(dy, dx))
-        phi2 = 90.
-        arc7 = CircleArc(c7, self.r7, phi1, phi2, 'arc7')
-
         # Add all the points and patches to the headstock.
         self.add_points(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11)
         self.add_patches(line1, line2, line3)

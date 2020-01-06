@@ -24,7 +24,7 @@ import os
 
 import numpy as np
 
-from metalute.head import FenderHeadstock
+from metalute.head import StratoHeadstock
 from metalute.matplotlib_ import plt, drafting_figure
 from metalute.geometry import Point
 from metalute.units import inches_to_mm
@@ -60,19 +60,27 @@ class TestHead(unittest.TestCase):
         xh, yh = to_physical_coordinates(xh, yh)
         return x, y, xh, yh
 
-    def test_fender_construction(self) -> None:
+    def test_strato(self) -> None:
         """.
         """
-        drafting_figure('Fender headstock construction', 'A4')
-        headstock = FenderHeadstock()
+        drafting_figure('Stratocaster headstock', 'A4')
+        headstock = StratoHeadstock()
+        offset = Point(-80., 10.)
+        headstock.draw_top(offset)
+
+    def test_strato_construction(self) -> None:
+        """.
+        """
+        drafting_figure('Stratocaster headstock construction', 'A4')
+        headstock = StratoHeadstock()
         offset = Point(-80., 10.)
         headstock.draw_top(offset, points=True, construction=True)
 
-    def test_fender_accuracy(self) -> None:
+    def test_strato_accuracy(self) -> None:
         """
         """
-        drafting_figure('Fender headstock accuracy', 'A4')
-        headstock = FenderHeadstock()
+        drafting_figure('Stratocaster headstock accuracy', 'A4')
+        headstock = StratoHeadstock()
         offset = Point(-80., 10.)
         headstock.draw_top(offset)
         x, y, xh, yh = self.load_strato_data()
