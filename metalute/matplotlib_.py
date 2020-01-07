@@ -106,38 +106,50 @@ def drafting_figure(name: str, size: str, orientation: str = 'Landscape',
     plt.figure(name)
     # Setup the axes.
     plt.gca().set_aspect('equal')
-    plt.gca().axis([-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height])
-    plt.subplots_adjust(left=-0.0001, right=1.0001, top=1.0001, bottom=0.)
+    hmargin = margin
+    vmargin = hmargin * width / height
+    plt.subplots_adjust(left=hmargin, right=1. - hmargin, top=1. - vmargin, bottom=vmargin)
     plt.xticks([])
     plt.yticks([])
-    # Draw a rectangle delimiting the drafting area.
-    margin *= max(width, height)
-    w = width - 2. * margin
-    h = height - 2. * margin
-    hw = 0.5 * w
-    hh = 0.5 * h
-    kwargs = dict(fill=False)
-    patch = matplotlib.patches.Rectangle((-hw, -hh), w, h, **kwargs)
-    plt.gca().add_patch(patch)
+    w = 0.5 * width * (1. - 2. * hmargin)
+    h = 0.5 * height * (1. - 2. * vmargin)
+    plt.gca().axis([-w, w, -h, h])
     # Add the reference grid on the borders.
     nx = int(width / pitch + 0.5)
     ny = int(height / pitch + 0.5)
-    x = np.linspace(-hw, hw, nx + 1)
-    y = np.linspace(-hh, hh, ny + 1)
-    plt.hlines(y, -hw, -hw - tick_size)
-    plt.hlines(y, hw, hw + tick_size)
-    plt.vlines(x, -hh, -hh - tick_size)
-    plt.vlines(x, hh, hh + tick_size)
+    x = np.linspace(-w, w, nx + 1)
+    y = np.linspace(-h, h, ny + 1)
+    plt.hlines(y, -w, -w - tick_size, clip_on=False)
+    plt.hlines(y, w, w + tick_size, clip_on=False)
+    plt.vlines(x, -h, -h - tick_size, clip_on=False)
+    plt.vlines(x, h, h + tick_size, clip_on=False)
     # Add the letters and numbers to the reference grid.
-    dx = hw / nx
-    dy = hh / ny
+    dx = w / nx
+    dy = h / ny
     fmt = dict(size='large', ha='center', va='center')
     for i, _x in enumerate(np.flip((x + dx)[:-1])):
-        plt.text(_x, -hh - tick_size, '{}'.format(i + 1), **fmt)
-        plt.text(_x, hh + tick_size, '{}'.format(i + 1), rotation=90., **fmt)
+        plt.text(_x, -h - tick_size, '{}'.format(i + 1), **fmt)
+        plt.text(_x, h + tick_size, '{}'.format(i + 1), rotation=90., **fmt)
     for i, _y in enumerate((y + dy)[:-1]):
-        plt.text(-hw - tick_size, _y, '{}'.format(ascii_uppercase[i]), **fmt)
-        plt.text(hw + tick_size, _y, '{}'.format(ascii_uppercase[i]), rotation=90., **fmt)
+        plt.text(-w - tick_size, _y, '{}'.format(ascii_uppercase[i]), **fmt)
+        plt.text(w + tick_size, _y, '{}'.format(ascii_uppercase[i]), rotation=90., **fmt)
+    # Add the reference rulers.
+    delta = 8.
+    span = 0.75
+    x0, y0, l = 0., h - delta, 10 * int((span * w) / 10.)
+    x = np.arange(-l, l + 0.5, 10.)
+    plt.hlines(y0, -l, l)
+    plt.vlines(x, y0, y0 - 2.)
+    fmt = dict(size='small', ha='center', va='top')
+    for _x in x:
+        plt.text(_x, y0 - 3., '{:.0f}'.format(_x), **fmt)
+    x0, y0, l = -w + delta, 0., 10 * int((span * h) / 10.)
+    y = np.arange(-l, l + 0.5, 10.)
+    plt.vlines(x0, -l, l)
+    plt.hlines(y, x0, x0 + 2.)
+    fmt = dict(size='small', ha='left', va='center')
+    for _y in y:
+        plt.text(x0 + 3., _y, '{:.0f}'.format(_y), **fmt)
 
 
 
