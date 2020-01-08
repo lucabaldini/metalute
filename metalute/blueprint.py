@@ -18,9 +18,11 @@
 """Blueprint.
 """
 
+import time
 from string import ascii_uppercase
 
 import numpy as np
+from matplotlib.offsetbox import TextArea, VPacker, AnchoredOffsetbox
 
 from metalute.matplotlib_ import plt, setup_page
 
@@ -36,6 +38,41 @@ PAPER_SIZE_DICT = {'A0': (841., 1189.),
                    }
 
 PAPER_ORIENTATIONS = ['Portrait', 'Landscape']
+
+
+
+class MultiTextBox(AnchoredOffsetbox):
+
+    """
+    """
+
+    def __init__(self, fields):
+        """
+        """
+        lines = []
+        for key, value in fields.items():
+            lines.append(TextArea(key.upper(), textprops={'color': 'lightgray'}))
+            lines.append(TextArea('    {}'.format(value)))
+        pack = VPacker(children=lines, pad=0., sep=2)
+        super().__init__(4, child=pack, borderpad=0.)
+        plt.gca().add_artist(self)
+
+
+
+class BlueprintBox(MultiTextBox):
+
+    """
+    """
+
+    def __init__(self, title, author):
+        """
+        """
+        fields = dict(title=title, author=author, date=time.asctime())
+        super().__init__(fields)
+
+
+
+
 
 
 def blueprint(name: str, size: str, orientation: str = 'Landscape', dpi: float = 100.,
@@ -97,3 +134,4 @@ def blueprint(name: str, size: str, orientation: str = 'Landscape', dpi: float =
     fmt = dict(size='small', ha='left', va='center')
     for _y in y:
         plt.text(x0 + 3., _y, '{:.0f}'.format(_y), **fmt)
+    box = BlueprintBox(name, 'Luca Baldini')
