@@ -24,7 +24,7 @@ from string import ascii_uppercase
 import numpy as np
 from matplotlib.offsetbox import TextArea, VPacker, AnchoredOffsetbox
 
-from metalute.matplotlib_ import plt, setup_page
+from metalute.matplotlib_ import plt, setup_page, mm_to_points
 
 
 PAPER_SIZE_DICT = {'A0': (841., 1189.),
@@ -52,8 +52,8 @@ class MultiTextBox(AnchoredOffsetbox):
         lines = []
         for key, value in fields.items():
             lines.append(TextArea(key.upper(), textprops={'color': 'lightgray'}))
-            lines.append(TextArea('    {}'.format(value)))
-        pack = VPacker(children=lines, pad=0., sep=2)
+            lines.append(TextArea('    {}                       '.format(value)))
+        pack = VPacker(children=lines, pad=0., sep=2.)
         super().__init__(4, child=pack, borderpad=0.)
         plt.gca().add_artist(self)
 
@@ -72,12 +72,34 @@ class BlueprintBox(MultiTextBox):
 
 
 
+def hruler(y, xmin, xmax, step=10., line_width=0.15):
+    """
+    """
+    fmt = dict(lw=mm_to_points(line_width))
+    plt.hlines(y, xmin, xmax, **fmt)
+    x = np.arange(xmin, xmax + 0.5 * step, step)
+    plt.vlines(x, y, y - 2., **fmt)
+    fmt = dict(size='small', ha='center', va='top')
+    for _x in x:
+        plt.text(_x, y - 3., '{:.0f}'.format(_x), **fmt)
 
 
 
-def blueprint(name: str, size: str, orientation: str = 'Landscape', dpi: float = 100.,
-              text_size: float = 3., line_width: float = 0.25, margin: float = 0.05,
-              pitch: float = 30., tick_size: float = 7.5):
+def vruler(x, ymin, ymax, step=10., line_width=0.15):
+    """
+    """
+    fmt = dict(lw=mm_to_points(line_width))
+    plt.vlines(x, ymin, ymax, **fmt)
+    y = np.arange(ymin, ymax + 0.5 * step, step)
+    plt.hlines(y, x, x + 2., **fmt)
+    fmt = dict(size='small', ha='left', va='center')
+    for _y in y:
+        plt.text(x + 3, _y, '{:.0f}'.format(_y), **fmt)
+
+
+def blueprint(name: str, size: str, author=None, orientation: str = 'Landscape',
+              dpi: float = 100., text_size: float = 3., line_width: float = 0.25,
+              margin: float = 0.05, pitch: float = 30., tick_size: float = 7.5):
     """Create a custom figure for techical drawings.
     """
     assert orientation in PAPER_ORIENTATIONS
@@ -120,18 +142,8 @@ def blueprint(name: str, size: str, orientation: str = 'Landscape', dpi: float =
     # Add the reference rulers.
     delta = 8.
     span = 0.75
-    x0, y0, l = 0., h - delta, 10 * int((span * w) / 10.)
-    x = np.arange(-l, l + 0.5, 10.)
-    plt.hlines(y0, -l, l)
-    plt.vlines(x, y0, y0 - 2.)
-    fmt = dict(size='small', ha='center', va='top')
-    for _x in x:
-        plt.text(_x, y0 - 3., '{:.0f}'.format(_x), **fmt)
-    x0, y0, l = -w + delta, 0., 10 * int((span * h) / 10.)
-    y = np.arange(-l, l + 0.5, 10.)
-    plt.vlines(x0, -l, l)
-    plt.hlines(y, x0, x0 + 2.)
-    fmt = dict(size='small', ha='left', va='center')
-    for _y in y:
-        plt.text(x0 + 3., _y, '{:.0f}'.format(_y), **fmt)
-    box = BlueprintBox(name, 'Luca Baldini')
+    l = 10 * int((span * w) / 10.)
+    hruler(h - delta, -l, l)
+    l = 10 * int((span * h) / 10.)
+    vruler(-w + delta, -l, l)
+    box = BlueprintBox(name, author)
