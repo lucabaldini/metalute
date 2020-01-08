@@ -81,7 +81,10 @@ def hruler(y, xmin, xmax, step=10., line_width=0.15):
     plt.vlines(x, y, y - 2., **fmt)
     fmt = dict(size='small', ha='center', va='top')
     for _x in x:
-        plt.text(_x, y - 3., '{:.0f}'.format(_x), **fmt)
+        text = '{:.0f}'.format(_x)
+        if text == '0':
+            text += ' mm'
+        plt.text(_x, y - 3., text, **fmt)
 
 
 
@@ -94,7 +97,10 @@ def vruler(x, ymin, ymax, step=10., line_width=0.15):
     plt.hlines(y, x, x + 2., **fmt)
     fmt = dict(size='small', ha='left', va='center')
     for _y in y:
-        plt.text(x + 3, _y, '{:.0f}'.format(_y), **fmt)
+        text = '{:.0f}'.format(_y)
+        if text == '0':
+            text += ' mm'
+        plt.text(x + 3, _y, text, **fmt)
 
 
 def blueprint(name: str, size: str, author=None, orientation: str = 'Landscape',
@@ -140,7 +146,7 @@ def blueprint(name: str, size: str, author=None, orientation: str = 'Landscape',
         plt.text(-w - tick_size, _y, '{}'.format(ascii_uppercase[i]), **fmt)
         plt.text(w + tick_size, _y, '{}'.format(ascii_uppercase[i]), rotation=90., **fmt)
     # Add the reference rulers.
-    delta = 8.
+    delta = 5.
     span = 0.75
     l = 10 * int((span * w) / 10.)
     hruler(h - delta, -l, l)
