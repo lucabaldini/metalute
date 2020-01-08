@@ -21,7 +21,7 @@
 import numpy as np
 
 from metalute.units import inches_to_mm
-from metalute.matplotlib_ import plt, drafting_figure
+from metalute.matplotlib_ import plt
 from metalute.geometry import Point, PolyLine, CircleArc, Hole
 
 
