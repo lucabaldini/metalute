@@ -23,7 +23,7 @@ import numpy as np
 from metalute.units import inches_to_mm
 from metalute.matplotlib_ import plt
 from metalute.geometry import Point, PolyLine, CircleArc, Hole
-from metalute.dimension import dim
+from metalute.dimension import dim, vdim
 
 
 class Headstock:
@@ -200,3 +200,4 @@ class StratoHeadstock(Headstock):
         """
         dim(self.point('p1'), self.point('p11'), offset)
         dim(self.hole(1).center, self.hole(0).center, offset)
+        vdim(self.hole(5).center, self.hole(4).center, offset, distance=30.)

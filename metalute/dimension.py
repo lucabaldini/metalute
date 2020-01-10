@@ -40,7 +40,7 @@ class Arrow(Line):
 
 
 
-def dim(p1, p2, offset, padding: float = 3., distance: float = 15., margin: float = 5.):
+def dim(p1, p2, offset, padding: float = 2., distance: float = 15., margin: float = 5.):
     """
     """
     p1 += offset
@@ -72,32 +72,15 @@ def dim(p1, p2, offset, padding: float = 3., distance: float = 15., margin: floa
     Arrow(m.move(_d, phi + 90.), _p2).draw(**fmt)
 
 
-
-def hdim(y, x1, x2, tick=2., va='top', pad=2., intent=None, text_size: int = 15):
+def vdim(p1, p2, offset, padding: float = 2., distance: float = 15., margin: float = 5.):
     """
     """
-    if va == 'bottom':
-        pad = -pad
-    fmt = dict(color='lightgrey')
-    plt.hlines(y, x1, x2, **fmt)
-    plt.vlines(x1, y - tick, y + tick, **fmt)
-    plt.vlines(x2, y - tick, y + tick, **fmt)
-    dist = abs(x2 - x1)
-    txt = '{:.2f} mm'.format(dist)
-    fmt = dict(size=text_size, ha='center', va=va)
-    plt.text(0.5 * (x1 + x2), y - pad, txt, **fmt)
-
-
-def vdim(x, y1, y2, tick=2., ha='left', pad=2., intent=None, text_size: int = 15):
-    """
-    """
-    if ha == 'right':
-        pad = -pad
-    fmt = dict(color='lightgrey')
-    plt.vlines(x, y1, y2, **fmt)
-    plt.hlines(y1, x - tick, x + tick, **fmt)
-    plt.hlines(y2, x - tick, x + tick, **fmt)
-    dist = abs(y2 - y1)
-    txt = '{:.2f} mm'.format(dist)
-    fmt = dict(size=text_size, ha=ha, va='center', rotation=90.)
-    plt.text(x + pad, 0.5 * (y1 + y2), txt, **fmt)
+    fmt = dict(color='lightgray')
+    xmax = max(p1.x, p2.x)
+    _p1 = Point(xmax, p1.y)
+    _p2 = Point(xmax, p2.y)
+    if p1.x > p2.x:
+        Line(p2, _p2).draw(offset + Point(padding, 0.), **fmt)
+    else:
+        Line(p1, _p1).draw(offset + Point(padding, 0.), **fmt)
+    dim(_p1, _p2, offset, padding, distance, margin)
