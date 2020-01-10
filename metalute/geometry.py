@@ -105,6 +105,11 @@ class Point(GeometricalEntity):
         """
         return self.__class__(self.x - other.x, self.y - other.y)
 
+    def __rmul__(self, const: float):
+        """
+        """
+        return self.__class__(self.x * const, self.y * const)
+
     def xy(self):
         """
         """
@@ -154,6 +159,36 @@ class PolyLine(GeometricalEntity):
         y = [point.y + offset.y for point in self.points]
         line = matplotlib.lines.Line2D(x, y, **kwargs)
         plt.gca().add_line(line)
+
+
+
+class Line(PolyLine):
+
+    """
+    """
+
+    def __init__(self, p1, p2, name: str = None, intent: str = None):
+        """Constructor.
+        """
+        super().__init__(p1, p2, name=name, intent=intent)
+        self.p1, self.p2 = self.points
+
+    def length(self):
+        """
+        """
+        dx, dy = (self.p2 - self.p1).xy()
+        return np.sqrt(dx ** 2. + dy **2.)
+
+    def midpoint(self):
+        """
+        """
+        return 0.5 * (self.p1 + self.p2)
+
+    def slope(self):
+        """
+        """
+        dx, dy = (self.p2 - self.p1).xy()
+        return np.degrees(np.arctan2(dy, dx))
 
 
 
