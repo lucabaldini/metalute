@@ -23,6 +23,7 @@ import numpy as np
 from metalute.units import inches_to_mm
 from metalute.matplotlib_ import plt
 from metalute.geometry import Point, PolyLine, CircleArc, Hole
+from metalute.dimension import dim
 
 
 class Headstock:
@@ -55,6 +56,16 @@ class Headstock:
         for point in points:
             if point.name is not None:
                 self.point_dict[point.name] = point
+
+    def point(self, name):
+        """
+        """
+        return self.point_dict[name]
+
+    def hole(self, i):
+        """
+        """
+        return self.hole_list[i]
 
     def add_patches(self, *patches):
         """
@@ -183,3 +194,9 @@ class StratoHeadstock(Headstock):
             _p = pivot.move(i * pitch + offset, phi)
             h = Hole(_p, hole_diameter, 'h{}'.format(i + 1))
             self.add_holes(h)
+
+    def dimension_top(self, offset):
+        """
+        """
+        dim(self.point('p1'), self.point('p11'), offset)
+        dim(self.hole(1).center, self.hole(0).center, offset)

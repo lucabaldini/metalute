@@ -40,9 +40,11 @@ class Arrow(Line):
 
 
 
-def dim(p1, p2, padding: float = 3., distance: float = 15., margin: float = 5.):
+def dim(p1, p2, offset, padding: float = 3., distance: float = 15., margin: float = 5.):
     """
     """
+    p1 += offset
+    p2 += offset
     fmt = dict(offset=Point(0., 0.), color='lightgray')
     # Basic setup.
     line = Line(p1, p2)
@@ -59,8 +61,11 @@ def dim(p1, p2, padding: float = 3., distance: float = 15., margin: float = 5.):
     m = l.midpoint()
     text = '{:.2f}'.format(length)
     rot = phi + 90.
-    if rot < 0.:
+    if rot < -90.:
         rot += 180.
+    elif rot > 90:
+        rot -= 180
+    print(rot)
     plt.text(*m.xy(), text, rotation=rot, ha='center', va='center')
     _d = 1.2 * len(text)
     Arrow(m.move(_d, phi - 90.), _p1).draw(**fmt)

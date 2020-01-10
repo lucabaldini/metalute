@@ -30,8 +30,8 @@ from metalute.blueprint import blueprint
 from metalute.geometry import Point
 from metalute.units import inches_to_mm
 from metalute import TEST_DATA_FOLDER
-#if sys.flags.interactive:
-#    plt.ion()
+if sys.flags.interactive:
+    plt.ion()
 
 
 
@@ -68,6 +68,7 @@ class TestHead(unittest.TestCase):
         headstock = StratoHeadstock()
         offset = Point(-80., 10.)
         headstock.draw_top(offset)
+        headstock.dimension_top(offset)
 
     def test_strato_construction(self) -> None:
         """.
@@ -97,5 +98,3 @@ class TestHead(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(exit=not sys.flags.interactive)
-    if sys.flags.interactive:
-        plt.show()

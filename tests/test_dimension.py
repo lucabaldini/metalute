@@ -48,10 +48,10 @@ class TestDimension(unittest.TestCase):
         p3.draw(offset)
         p4.draw(offset)
         p5.draw(offset)
-        dim(p1, p2)
-        dim(p1, p3)
-        dim(p3, p1)
-        dim(p4, p5)
+        dim(p1, p2, offset)
+        dim(p1, p3, offset)
+        dim(p3, p1, offset)
+        dim(p4, p5, offset)
 
 
 if __name__ == '__main__':
