@@ -28,6 +28,8 @@ from metalute.matplotlib_ import plt, setup_page, mm_to_points
 
 
 PAPER_SIZE_DICT = {'A0': (841., 1189.),
+                   'A1': (594., 841.),
+                   'A2': (420., 594.),
                    'A3': (297., 420.),
                    'A4': (210., 297),
                    'A5': (148., 210),

@@ -62,8 +62,8 @@ class TestHead(unittest.TestCase):
     def test_body(self) -> None:
         """
         """
-        blueprint('Music Man Axis', 'A0')
-        offset = Point(-80., 10.)
+        blueprint('Music Man Axis', 'A2')
+        offset = Point(-200., 0.)
         x, y = self.load_data()
         x += offset.x
         y += offset.y
