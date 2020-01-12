@@ -299,3 +299,51 @@ class CircleArc(Circle):
         d = 2 * self.radius
         arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **kwargs)
         plt.gca().add_patch(arc)
+
+
+
+class SpiralArc(GeometricalEntity):
+
+    """Class describing a spiral arc.
+    """
+
+    def __init__(self, center, radius, phi1: float = 0., phi2: float = 360.,
+                 name: str = None, intent: str = None):
+        """Constructor.
+        """
+        super().__init__(name, intent)
+        self.center = center
+        self.radius = radius
+        self.phi1 = phi1
+        self.phi2 = phi2
+
+    def start_point(self, name=None, intent=None):
+        """
+        """
+        return self.center.move(self.radius(self.phi1), self.phi1, name, intent)
+
+    def end_point(self, name=None, intent=None):
+        """
+        """
+        return self.center.move(self.radius(self.phi2), self.phi2, name, intent)
+
+    def draw(self, offset, num_points: int = 250, construction: bool = True, **kwargs):
+        """
+        """
+        kwargs.setdefault('color', 'black')
+        x0, y0 = (self.center + offset).xy()
+        phi = np.linspace(self.phi1, self.phi2, num_points)
+        r = self.radius(phi)
+        x = x0 + r * np.cos(np.radians(phi))
+        y = y0 + r * np.sin(np.radians(phi))
+        # This needs to go first, as the construction is in background.
+        if construction:
+            fmt = dict(ls='dashed', color='lightgrey')
+            p1 = self.start_point()
+            p2 = self.end_point()
+            PolyLine(p1, self.center, p2).draw(offset, **fmt)
+            d = 10.
+            arc = matplotlib.patches.Arc((x0, y0), d, d, 0., self.phi1, self.phi2, **fmt)
+            plt.gca().add_patch(arc)
+            self.center.draw(offset, color='lightgrey')
+        plt.plot(x, y, **kwargs)

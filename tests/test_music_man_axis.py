@@ -26,6 +26,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 from metalute.head import StratoHeadstock
+from metalute.body import MusicManAxis
 from metalute.geometry import Point, Circle, CircleArc, Line
 from metalute.matplotlib_ import plt
 from metalute.blueprint import blueprint
@@ -59,7 +60,19 @@ class TestHead(unittest.TestCase):
         x, y = to_physical_coordinates(x, y)
         return x, y
 
-    def test_body(self) -> None:
+    def test_accuracy(self):
+        """
+        """
+        blueprint('Music Man Axis', 'A2')
+        offset = Point(-200., 0.)
+        x, y = self.load_data()
+        x += offset.x
+        y += offset.y
+        plt.plot(x, y, 'o')
+        body = MusicManAxis()
+        body.draw(offset)
+
+    def _test_(self) -> None:
         """
         """
         blueprint('Music Man Axis', 'A2')
@@ -69,35 +82,24 @@ class TestHead(unittest.TestCase):
         y += offset.y
         plt.plot(x, y, 'o')
         p0 = Point(0., 0., 'p0')
-        p0.draw(offset)
-
-        def radius(x):
-            return 300. - 2.9 * x + 0.015 * x**2.
+        #p0.draw(offset)
 
         def f(x, m, q, x0, gamma):
             return m * (1. - np.exp(-(x/x0)**gamma)) + q
 
         c1 = Point(240., 0.)
-        c1.draw(offset)
         n = 13
         _x = x[:n] - offset.x
         _y = y[:n] - offset.y
         #plt.plot(_x + offset.x, _y + offset.y)
         dx = _x - c1.x
         dy = _y - c1.y
-        print(dx)
-        print(dy)
         r = np.sqrt(dx**2. + dy**2.)
         theta = np.degrees(np.arctan2(dy, dx))
         print(theta)
-        #plt.figure()
-        #plt.plot(theta, r, 'o-')
-        #plt.grid(which='both')
         popt, pcov = curve_fit(f, theta, r, p0=(140., 100, 150., 5.))
         print(popt)
         grid = np.linspace(theta.min(), theta.max(), 250)
-        #plt.plot(grid, f(grid, *popt))
-
         theta = np.linspace(180., 100., 100)
         r = f(theta, *popt)
         x = c1.x + r * np.cos(np.radians(theta))
@@ -106,10 +108,8 @@ class TestHead(unittest.TestCase):
         plt.plot(x + offset.x, -y + offset.y)
 
 
-        #r1 = 300.
-        #c1 = Point(r1, 0.)
-        #circle1 = Circle(c1, r1)
-        #circle1.draw(offset)
+
+
 
 
 
