@@ -201,3 +201,4 @@ class StratoHeadstock(Headstock):
         dim(self.point('p1'), self.point('p11'), offset)
         dim(self.hole(1).center, self.hole(0).center, offset)
         vdim(self.hole(5).center, self.hole(4).center, offset, distance=30.)
+        #vdim(self.point('p4'), self.point('p9'), offset)

@@ -105,7 +105,7 @@ def vruler(x, ymin, ymax, step=10., line_width=0.15):
 
 def blueprint(name: str, size: str, author=None, orientation: str = 'Landscape',
               dpi: float = 100., text_size: float = 3., line_width: float = 0.25,
-              margin: float = 0.05, pitch: float = 30., tick_size: float = 7.5):
+              margin: float = 0.05, pitch: float = 50., tick_size: float = 7.5):
     """Create a custom figure for techical drawings.
     """
     assert orientation in PAPER_ORIENTATIONS
