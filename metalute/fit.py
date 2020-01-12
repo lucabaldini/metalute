@@ -18,8 +18,34 @@
 """Fitting-related facilities.
 """
 
+import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.optimize import curve_fit, leastsq
+
+from metalute.geometry import Point, Circle
+
+
+def distance_from_center(x, y, x0, y0):
+    """
+    """
+    return np.sqrt((x - x0)**2. + (y - y0)**2.)
+
+
+def circle_residuals(center, x, y):
+    """
+    """
+    r = distance_from_center(x, y, *center)
+    return r - r.mean()
+
+
+def fit_circle(x, y):
+    """
+    """
+    barycenter = np.mean(x), np.mean(y)
+    center, _ = leastsq(circle_residuals, barycenter, args=(x,y))
+    radius = distance_from_center(x, y, *center).mean()
+    return Point(*center), radius
+
 
 
 """

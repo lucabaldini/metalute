@@ -110,10 +110,21 @@ class Point(GeometricalEntity):
         """
         return self.__class__(self.x * const, self.y * const)
 
+    def __truediv__(self, const: float):
+        """
+        """
+        return self.__class__(self.x / const, self.y / const)
+
     def xy(self):
         """
         """
         return (self.x, self.y)
+
+    def distance_to(self, other):
+        """
+        """
+        dx, dy = self - other
+        return np.sqrt(dx**2. + dy**2.)
 
     def text_info(self) -> str:
         """Overloaded method.

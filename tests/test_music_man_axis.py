@@ -25,6 +25,7 @@ import os
 import numpy as np
 from scipy.optimize import curve_fit
 
+from metalute.fit import fit_circle
 from metalute.head import StratoHeadstock
 from metalute.body import MusicManAxis
 from metalute.geometry import Point, Circle, CircleArc, Line
@@ -66,11 +67,22 @@ class TestHead(unittest.TestCase):
         blueprint('Music Man Axis', 'A1')
         offset = Point(-200., -50.)
         x, y = self.load_data()
-        x += offset.x
-        y += offset.y
-        plt.plot(x, y, 'o')
+        plt.plot(x + offset.x, y + offset.y, 'o')
         body = MusicManAxis()
         body.draw(offset)
+
+        _x = x[13:16]
+        _y = y[13:16]
+        center, radius = fit_circle(_x, _y)
+        circ = Circle(center, radius)
+        circ.draw(offset)
+
+        _x = x[18:22]
+        _y = y[18:22]
+        center, radius = fit_circle(_x, _y)
+        circ = Circle(center, radius)
+        circ.draw(offset)
+
 
     def _test_(self) -> None:
         """
