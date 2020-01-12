@@ -327,6 +327,16 @@ class SpiralArc(GeometricalEntity):
         """
         return self.center.move(self.radius(self.phi2), self.phi2, name, intent)
 
+    def slope_at_start_point(self):
+        """
+        """
+        pass
+
+    def slope_at_end_point(self):
+        """
+        """
+        pass
+
     def draw(self, offset, num_points: int = 250, construction: bool = True, **kwargs):
         """
         """

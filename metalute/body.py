@@ -20,7 +20,7 @@
 
 import numpy as np
 
-from metalute.geometry import Point, SpiralArc
+from metalute.geometry import Point, CircleArc, SpiralArc
 
 
 class MusicManAxis:
@@ -62,3 +62,6 @@ class MusicManAxis:
         radius = lambda phi: MusicManAxis.big_radius(phi, m1, q1, scale1, gamma1)
         arc1 = SpiralArc(c1, radius, phi1, phi2)
         arc1.draw(offset)
+        c2 = Point(280., 250., 'c2')
+        arc2 = CircleArc(c2, 140., 240., 320., 'arc2')
+        arc2.draw(offset)

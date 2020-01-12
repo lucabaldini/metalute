@@ -63,8 +63,8 @@ class TestHead(unittest.TestCase):
     def test_accuracy(self):
         """
         """
-        blueprint('Music Man Axis', 'A2')
-        offset = Point(-200., 0.)
+        blueprint('Music Man Axis', 'A1')
+        offset = Point(-200., -50.)
         x, y = self.load_data()
         x += offset.x
         y += offset.y
