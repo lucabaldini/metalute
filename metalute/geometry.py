@@ -328,20 +328,25 @@ class SpiralArc(GeometricalEntity):
         self.phi1 = phi1
         self.phi2 = phi2
 
+    def point(self, phi, name=None, intent=None):
+        """
+        """
+        return self.center.move(self.radius(phi), phi, name, intent)
+
     def start_point(self, name=None, intent=None):
         """
         """
-        return self.center.move(self.radius(self.phi1), self.phi1, name, intent)
+        return self.point(self.phi1)
 
     def end_point(self, name=None, intent=None):
         """
         """
-        return self.center.move(self.radius(self.phi2), self.phi2, name, intent)
+        return self.point(self.phi2)
 
     def slope_at_start_point(self):
         """
         """
-        pass
+        return Line(self.point(self.phi1), self.point(self.phi1 - 0.1)).slope()
 
     def slope_at_end_point(self):
         """

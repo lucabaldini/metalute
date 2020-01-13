@@ -64,7 +64,7 @@ class TestHead(unittest.TestCase):
     def test_accuracy(self):
         """
         """
-        blueprint('Music Man Axis', 'A1')
+        blueprint('Music Man Axis accuracy', 'A1')
         offset = Point(-200., -50.)
         x, y = self.load_data()
         plt.plot(x + offset.x, y + offset.y, 'o')
@@ -75,8 +75,15 @@ class TestHead(unittest.TestCase):
         fit_circle_arc(x, y, 23, 26).draw(offset)
         fit_circle_arc(x, y, 26, 29, invert=True).draw(offset)
         fit_circle_arc(x, y, 33, 37).draw(offset)
-
         fit_circle_arc(x, y, 44, 47).draw(offset)
+
+    def test_draw(self):
+        """
+        """
+        blueprint('Music Man Axis', 'A1')
+        offset = Point(-200., -50.)
+        body = MusicManAxis()
+        body.draw(offset)
 
     def _test_(self) -> None:
         """
