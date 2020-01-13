@@ -288,6 +288,11 @@ class CircleArc(Circle):
         """
         return self.center.move(self.radius, self.phi2, name, intent)
 
+    def text_info(self) -> str:
+        """Overloaded method.
+        """
+        return '{}, r = {:.2f}, phi = {:.2f}--{:.2f}'.format(self.center, self.radius, self.phi1, self.phi2)
+
     def draw(self, offset, full_circle: bool = True, radii: bool = True, **kwargs):
         """
         """

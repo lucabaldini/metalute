@@ -52,7 +52,7 @@ def fit_circle_arc(x, y, imin: int = 0, imax: int = -1, invert: bool = False):
     if invert:
         phi1, phi2 = phi2, phi1
     arc = CircleArc(center, radius, phi1, phi2)
-    #print(arc)
+    print(arc)
     return arc
 
 

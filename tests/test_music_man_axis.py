@@ -70,7 +70,7 @@ class TestHead(unittest.TestCase):
         plt.plot(x + offset.x, y + offset.y, 'o')
         body = MusicManAxis()
         body.draw(offset)
-        fit_circle_arc(x, y, 13, 16).draw(offset)
+        #fit_circle_arc(x, y, 13, 16).draw(offset)
         fit_circle_arc(x, y, 18, 22, invert=True).draw(offset)
         fit_circle_arc(x, y, 23, 26).draw(offset)
         fit_circle_arc(x, y, 26, 29, invert=True).draw(offset)

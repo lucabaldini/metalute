@@ -57,6 +57,10 @@ class MusicManAxis:
         gamma1 = 5.4759
         phi1 = 100.
         phi2 = 240.
+        d2 = 25.
+        r3 = 91.50
+        phi3 = 70.
+
         anchor = Point(0., 0., 'anchor')
         c1 = anchor.move(d1, 0., 'c1')
         radius = lambda phi: MusicManAxis.big_radius(phi, m1, q1, scale1, gamma1)
@@ -64,13 +68,12 @@ class MusicManAxis:
         arc1.draw(offset)
         p1 = arc1.start_point('p1')
         p1.draw(offset)
-        p2 = p1.move(20., arc1.slope_at_start_point(), 'p2')
+        phi = arc1.slope_at_start_point()
+        p2 = p1.move(d2, phi, 'p2')
         p2.draw(offset)
         line = Line(p1, p2)
         line.draw(offset)
-
-        #p2 = arc1.end_point('p2')
-        #p2.draw(offset)
-        #c2 = Point(280., 250., 'c2')
-        #arc2 = CircleArc(c2, 140., 240., 320., 'arc2')
-        #arc2.draw(offset)
+        c3 = p2.move(r3, phi + 90.)
+        c3.draw(offset)
+        arc3 = CircleArc(c3, r3, phi - 90., phi - 90. + phi3)
+        arc3.draw(offset)
