@@ -25,7 +25,7 @@ import os
 import numpy as np
 from scipy.optimize import curve_fit
 
-from metalute.fit import fit_circle
+from metalute.fit import fit_circle_arc
 from metalute.head import StratoHeadstock
 from metalute.body import MusicManAxis
 from metalute.geometry import Point, Circle, CircleArc, Line
@@ -70,19 +70,13 @@ class TestHead(unittest.TestCase):
         plt.plot(x + offset.x, y + offset.y, 'o')
         body = MusicManAxis()
         body.draw(offset)
+        fit_circle_arc(x, y, 13, 16).draw(offset)
+        fit_circle_arc(x, y, 18, 22, invert=True).draw(offset)
+        fit_circle_arc(x, y, 23, 26).draw(offset)
+        fit_circle_arc(x, y, 26, 29, invert=True).draw(offset)
+        fit_circle_arc(x, y, 33, 37).draw(offset)
 
-        _x = x[13:16]
-        _y = y[13:16]
-        center, radius = fit_circle(_x, _y)
-        circ = Circle(center, radius)
-        circ.draw(offset)
-
-        _x = x[18:22]
-        _y = y[18:22]
-        center, radius = fit_circle(_x, _y)
-        circ = Circle(center, radius)
-        circ.draw(offset)
-
+        fit_circle_arc(x, y, 44, 47).draw(offset)
 
     def _test_(self) -> None:
         """

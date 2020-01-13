@@ -22,7 +22,7 @@ import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.optimize import curve_fit, leastsq
 
-from metalute.geometry import Point, Circle
+from metalute.geometry import Point, Line, CircleArc
 
 
 def distance_from_center(x, y, x0, y0):
@@ -38,13 +38,22 @@ def circle_residuals(center, x, y):
     return r - r.mean()
 
 
-def fit_circle(x, y):
+def fit_circle_arc(x, y, imin: int = 0, imax: int = -1, invert: bool = False):
     """
     """
+    x = x[imin:imax + 1]
+    y = y[imin:imax + 1]
     barycenter = np.mean(x), np.mean(y)
     center, _ = leastsq(circle_residuals, barycenter, args=(x,y))
     radius = distance_from_center(x, y, *center).mean()
-    return Point(*center), radius
+    center = Point(*center)
+    phi1 = Line(center, Point(x[0], y[0])).slope()
+    phi2 = Line(center, Point(x[-1], y[-1])).slope()
+    if invert:
+        phi1, phi2 = phi2, phi1
+    arc = CircleArc(center, radius, phi1, phi2)
+    #print(arc)
+    return arc
 
 
 
@@ -62,95 +71,4 @@ def line(x, m, q):
 def const(x, q):
     return np.full(x.shape, q)
 
-def calc_R(x, y, xc, yc):
-    return np.sqrt((x-xc)**2 + (y-yc)**2)
-
-def f(c, x, y):
-    Ri = calc_R(x, y, *c)
-    return Ri - Ri.mean()
-
-def leastsq_circle(x,y):
-    # coordinates of the barycenter
-    x_m = np.mean(x)
-    y_m = np.mean(y)
-    center_estimate = x_m, y_m
-    center, ier = leastsq(f, center_estimate, args=(x,y))
-    xc, yc = center
-    Ri       = calc_R(x, y, *center)
-    R        = Ri.mean()
-    return xc, yc, R
-
-_x = x[:3]
-_y = y[:3]
-popt, pcov = curve_fit(const, _x, _y)
-print(popt)
-_x = np.linspace(0, 20, 100)
-plt.plot(_x, const(_x, *popt))
-
-_x = x[3:8]
-_y = y[3:8]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-
-_x = x[7:10]
-_y = y[7:10]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-
-_x = x[11:18]
-_y = y[11:18]
-#plt.plot(_x, _y, 'o')
-popt, pcov = curve_fit(line, _x, _y)
-_x = np.linspace(0, 200, 100)
-plt.plot(_x, line(_x, *popt))
-
-_x = x[19:32]
-_y = y[19:32]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-#arc = matplotlib.patches.Arc((x0, y0), 2. * r, 2. * r, 0., -120., 80., fill=False)
-#plt.gca().add_patch(arc)
-
-_x = x[33:36]
-_y = y[33:36]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-
-_x = x[36:39]
-_y = y[36:39]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-
-_x = x[39:43]
-_y = y[39:43]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-
-_x = x[43:53]
-_y = y[43:53]
-x0, y0, r = leastsq_circle(_x, _y)
-print(x0, y0, r)
-circle = plt.Circle((x0, y0), radius=r, fill=False)
-plt.gca().add_patch(circle)
-
-_x = x[-3:]
-_y = y[-3:]
-popt, pcov = curve_fit(const, _x, _y)
-print(popt)
-_x = np.linspace(0, 20, 100)
-plt.plot(_x, const(_x, *popt))
-
-plt.axis([0, 200, -60, 60])
 """
