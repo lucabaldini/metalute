@@ -62,6 +62,8 @@ class MusicManAxis:
         phi3 = 55.
         r4 = 140.
         phi4 = 20.
+        r5 = 34.54
+        phi5 = 140.
 
         anchor = Point(0., 0., 'anchor')
         c1 = anchor.move(d1, 0., 'c1')
@@ -79,6 +81,13 @@ class MusicManAxis:
         c3.draw(offset)
         arc3 = CircleArc(c3, r3, phi - 90., phi - 90. + phi3)
         arc3.draw(offset)
-        c4 = arc3.end_point().move(r4, arc3.phi2, 'c4')
+        p3 = arc3.end_point('p3')
+        p3.draw(offset)
+        c4 = p3.move(r4, arc3.phi2, 'c4')
         arc4 = CircleArc(c4, r4, arc3.phi2 - phi4 + 180., arc3.phi2 + 180.)
         arc4.draw(offset)
+        p4 = arc4.start_point('p4')
+        p4.draw(offset)
+        c5 = p4.move(r5, arc4.phi1 + 180., 'c5')
+        arc5 = CircleArc(c5, r5, arc4.phi1 - phi5, arc4.phi1)
+        arc5.draw(offset)
