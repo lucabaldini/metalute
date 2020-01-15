@@ -75,9 +75,9 @@ class MusicManAxis:
         r10 = 16.61
         phi10 = 150.
         r11 = 65.83
-        phi11 = 37.00
-        r12 = 72.25
-        phi12 = 60.00
+        phi11 = 42.00
+        r12 = 52.25
+        phi12 = 68.00
         r13 = 180.00
         phi13 = 25. # removeme
 
@@ -88,6 +88,8 @@ class MusicManAxis:
         arc1.draw(offset)
         p1 = arc1.start_point('p1')
         p1.draw(offset)
+        p20 = arc1.end_point('p20')
+        p20.draw(offset)
         phi = arc1.slope_at_start_point()
         p2 = p1.move(d2, phi, 'p2')
         p2.draw(offset)
