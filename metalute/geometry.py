@@ -341,12 +341,12 @@ class SpiralArc(GeometricalEntity):
     def start_point(self, name=None, intent=None):
         """
         """
-        return self.point(self.phi1)
+        return self.point(self.phi1, name, intent)
 
     def end_point(self, name=None, intent=None):
         """
         """
-        return self.point(self.phi2)
+        return self.point(self.phi2, name, intent)
 
     def slope_at_start_point(self):
         """

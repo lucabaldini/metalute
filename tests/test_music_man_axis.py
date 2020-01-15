@@ -72,10 +72,13 @@ class TestHead(unittest.TestCase):
         body.draw(offset)
         #fit_circle_arc(x, y, 13, 16).draw(offset)
         #fit_circle_arc(x, y, 18, 22, invert=True).draw(offset)
-        fit_circle_arc(x, y, 23, 26).draw(offset)
-        fit_circle_arc(x, y, 26, 29, invert=True).draw(offset)
-        fit_circle_arc(x, y, 33, 37).draw(offset)
-        fit_circle_arc(x, y, 44, 47).draw(offset)
+        #fit_circle_arc(x, y, 23, 26).draw(offset)
+        #fit_circle_arc(x, y, 26, 29, invert=True).draw(offset)
+        #fit_circle_arc(x, y, 29, 33, invert=True).draw(offset)
+        #fit_circle_arc(x, y, 33, 37).draw(offset)
+        #fit_circle_arc(x, y, 38, 42, invert=True).draw(offset)
+        #fit_circle_arc(x, y, 42, 44, invert=True).draw(offset)
+        #fit_circle_arc(x, y, 44, 47).draw(offset)
 
     def test_draw(self):
         """
