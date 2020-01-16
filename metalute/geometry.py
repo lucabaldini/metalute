@@ -238,47 +238,46 @@ class PolyLine(Path):
 class Line(PolyLine):
 
     """Class representing a straight line.
-
-    # WARNING: change p1 and p2 to start_point and end_point.
     """
 
-    def __init__(self, p1, p2, name: str = None):
+    def __init__(self, start_point, end_point, name: str = None):
         """Constructor.
 
         Note that we have to pass the name as a keyword argument in order to
         prevent the parent class from swallowing it as an additional point.
         """
-        super().__init__(p1, p2, name=name)
-        self.p1, self.p2 = self.points
+        super().__init__(start_point, end_point, name=name)
+        self.start_point, self.end_point = self.points
 
     @classmethod
-    def from_start_point_and_slope(self, start_point, slope, length):
+    def from_start_point_and_dir(cls, start_point, length, slope, name):
+        """Different constructor.
         """
-        """
-        pass
+        end_point = start_point.move(length, slope)
+        return cls(start_point, end_point, name)
 
     def length(self):
         """Return the length of the line.
         """
-        return self.p1.distance_to(p2)
+        return self.start_point.distance_to(self.end_point)
 
     def midpoint(self, name: str = None):
         """Return the midpoint of the line.
         """
-        p = 0.5 * (self.p1 + self.p2)
+        p = 0.5 * (self.start_point + self.end_point)
         p.name = name
         return p
 
     def slope(self):
         """Return the slope of the line.
         """
-        dx, dy = (self.p2 - self.p1).xy()
+        dx, dy = (self.end_point - self.start_point).xy()
         return np.degrees(np.arctan2(dy, dx))
 
     def text_info(self) -> str:
         """Overloaded method.
         """
-        return '{}--{}'.format(self.p1, self.p2)
+        return '{}--{}'.format(self.start_point, self.end_point)
 
 
 

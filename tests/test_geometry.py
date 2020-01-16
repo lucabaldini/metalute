@@ -95,7 +95,7 @@ class TestGeometry(unittest.TestCase):
                 hh = 0.5 * self.height
                 p = Point(-hw, hh)
                 top = Line(p, p.move(self.width, 0.))
-                c = top.p2.move(hh, -90.)
+                c = top.end_point.move(hh, -90.)
                 right = CircularArc(c, hh, 90., -180.)
                 bot = right.connecting_line(self.width)
                 left = CircularArc(c.move(self.width, 180.), hh, -90., -180.)
