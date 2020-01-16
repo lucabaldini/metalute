@@ -170,6 +170,16 @@ class Point(GeometricalEntity):
         y = self.y + dist * np.sin(np.radians(phi))
         return Point(x, y, name)
 
+    def hmove(self, dist, name=None):
+        """Move the point horizontally.
+        """
+        return self.move(dist, 0., name)
+
+    def vmove(self, dist, name=None):
+        """Move the point vertically.
+        """
+        return self.move(dist, 90., name)
+
     def draw(self, offset, ha: str = 'left', va: str = 'bottom', **kwargs):
         """Draw method.
         """
@@ -220,10 +230,36 @@ class PolyLine(Path):
         self.points = points
         super().__init__(name)
 
+    def start_point(self):
+        """Return the start point.
+        """
+        return self.points[0]
+
+    def end_point(self):
+        """Return the end point.
+        """
+        return self.points[-1]
+
     def reference_points(self):
         """Overloaded method.
         """
         return self.points
+
+    def connecting_circular_arc(self, radius, span, name=None):
+        """Return the circular arc that connects to the end point of the line in
+        such a way that the combined path is differentiable all the way through.
+
+        Parameters
+        ---------
+        radius : float
+            The radius of the connecting arc (can be negative).
+
+        span : float
+            The measure of the connecting arc.
+        """
+        slope = self.slope()
+        center = self.end_point().move(radius, slope + 90.)
+        return CircularArc(center, radius, slope - 90., span)
 
     def draw(self, offset, **kwargs):
         """Draw method.
@@ -247,7 +283,6 @@ class Line(PolyLine):
         prevent the parent class from swallowing it as an additional point.
         """
         super().__init__(start_point, end_point, name=name)
-        self.start_point, self.end_point = self.points
 
     @classmethod
     def from_start_point_and_dir(cls, start_point, length, slope, name):
@@ -259,25 +294,25 @@ class Line(PolyLine):
     def length(self):
         """Return the length of the line.
         """
-        return self.start_point.distance_to(self.end_point)
+        return self.start_point().distance_to(self.end_point())
 
     def midpoint(self, name: str = None):
         """Return the midpoint of the line.
         """
-        p = 0.5 * (self.start_point + self.end_point)
+        p = 0.5 * (self.start_point() + self.end_point())
         p.name = name
         return p
 
     def slope(self):
         """Return the slope of the line.
         """
-        dx, dy = (self.end_point - self.start_point).xy()
+        dx, dy = (self.end_point() - self.start_point()).xy()
         return np.degrees(np.arctan2(dy, dx))
 
     def text_info(self) -> str:
         """Overloaded method.
         """
-        return '{}--{}'.format(self.start_point, self.end_point)
+        return '{}--{}'.format(self.start_point(), self.end_point())
 
 
 
@@ -462,11 +497,16 @@ class CircularArc(Circle):
             The measure of the connecting arc.
         """
         slope = self.end_phi
+        phi = self.end_phi
         if radius > 0:
             slope += 180.
+            span *= self.orientation()
+        else:
+            phi += 180.
+            span *= -self.orientation()
         radius = abs(radius)
         center = self.end_point().move(radius, slope)
-        return CircularArc(center, radius, self.end_phi, span * self.orientation())
+        return CircularArc(center, radius, phi, span)
 
     def text_info(self) -> str:
         """Overloaded method.
@@ -543,7 +583,7 @@ class SpiralArc(CircularArc):
         """Return the slope of the line connecting with the arc at the start
         point.
         """
-        raise NotImplementedError
+        return Line(self.point(self.end_phi), self.point(self.end_phi - 0.1)).slope()
 
     def draw_construction(self, offset, **kwargs):
         """Overloaded method.

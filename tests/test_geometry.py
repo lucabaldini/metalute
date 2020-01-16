@@ -59,9 +59,9 @@ class TestGeometry(unittest.TestCase):
         p1.draw(offset, **kwargs)
         p2.draw(offset, **kwargs)
         arc.connecting_line(10.).draw(offset, **kwargs)
-        arc.connecting_circular_arc(5., 180.).draw(offset, **kwargs)
+        arc.connecting_circular_arc(15., 45.).draw(offset, **kwargs)
         kwargs['ls'] = 'dashed'
-        arc.connecting_circular_arc(-5., 180.).draw(offset, **kwargs)
+        arc.connecting_circular_arc(-15., 45.).draw(offset, **kwargs)
         return arc
 
     def test_circular_arc(self) -> None:
@@ -74,7 +74,7 @@ class TestGeometry(unittest.TestCase):
         c2 = Point(40., 40., 'c2')
         arc2 = self._test_circular_arc_base(c2, 30, 0., -90., offset, color='red')
         c3 = Point(-40., -40., 'c3')
-        arc3 = self._test_circular_arc_base(c3, 25, 180., 90., offset, color='blue')
+        arc3 = self._test_circular_arc_base(c3, 25, 250., 40., offset, color='blue')
         c4 = Point(-40., 40., 'c4')
         arc4 = self._test_circular_arc_base(c4, 15, 180., -90., offset)
 

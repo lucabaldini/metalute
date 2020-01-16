@@ -86,47 +86,9 @@ class TestHead(unittest.TestCase):
         blueprint('Music Man Axis', 'A1')
         offset = Point(-200., -50.)
         body = MusicManAxis()
+        body.draw_construction(offset)
         body.draw(offset)
-
-    def _test_(self) -> None:
-        """
-        """
-        blueprint('Music Man Axis', 'A2')
-        offset = Point(-200., 0.)
-        x, y = self.load_data()
-        x += offset.x
-        y += offset.y
-        plt.plot(x, y, 'o')
-        p0 = Point(0., 0., 'p0')
-        #p0.draw(offset)
-
-        def f(x, m, q, x0, gamma):
-            return m * (1. - np.exp(-(x/x0)**gamma)) + q
-
-        c1 = Point(240., 0.)
-        n = 13
-        _x = x[:n] - offset.x
-        _y = y[:n] - offset.y
-        #plt.plot(_x + offset.x, _y + offset.y)
-        dx = _x - c1.x
-        dy = _y - c1.y
-        r = np.sqrt(dx**2. + dy**2.)
-        theta = np.degrees(np.arctan2(dy, dx))
-        print(theta)
-        popt, pcov = curve_fit(f, theta, r, p0=(140., 100, 150., 5.))
-        print(popt)
-        grid = np.linspace(theta.min(), theta.max(), 250)
-        theta = np.linspace(180., 100., 100)
-        r = f(theta, *popt)
-        x = c1.x + r * np.cos(np.radians(theta))
-        y = c1.y + r * np.sin(np.radians(theta))
-        plt.plot(x + offset.x, y + offset.y)
-        plt.plot(x + offset.x, -y + offset.y)
-
-
-
-
-
+        body.draw_reference_points(offset)
 
 
 if __name__ == '__main__':
