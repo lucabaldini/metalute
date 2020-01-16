@@ -38,16 +38,12 @@ class GeometricalEntity:
     ---------
     name : str (optional)
         The unique name of the entity
-
-    intent : str (optional)
-        A text label expressing the intent of the entity
     """
 
-    def __init__(self, name: str = None, intent: str = None) -> None:
+    def __init__(self, name: str = None) -> None:
         """Constructor.
         """
         self.name = name
-        self.intent = intent
 
     def text_info(self) -> str:
         """Basic textual information for the entity.
@@ -63,8 +59,6 @@ class GeometricalEntity:
         """
         text = self.name or self.__class__.__name__
         text = '{}: {}'.format(text, self.text_info())
-        if self.intent is not None:
-            text = '{} [{}]'.format(text, self.intent)
         return text
 
 
@@ -83,45 +77,46 @@ class Point(GeometricalEntity):
 
     name : str (optional)
         The unique name of the point
-
-    intent : str (optional)
-        A text label expressing the intent of the point
     """
 
-    def __init__(self, x: float = 0., y: float = 0., name: str = None, intent: str = None):
+    def __init__(self, x: float = 0., y: float = 0., name: str = None):
         """Constructor.
         """
         self.x = x
         self.y = y
-        super().__init__(name, intent)
+        super().__init__(name)
 
     def __add__(self, other):
-        """
+        """Operator overload.
         """
         return self.__class__(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
-        """
+        """Operator overload.
         """
         return self.__class__(self.x - other.x, self.y - other.y)
 
     def __rmul__(self, const: float):
-        """
+        """Operator overload.
         """
         return self.__class__(self.x * const, self.y * const)
 
     def __truediv__(self, const: float):
-        """
+        """Operator overload.
         """
         return self.__class__(self.x / const, self.y / const)
 
     def xy(self):
-        """
+        """Return the two orthogonal coordinates as a 2-element tuple.
+
+        This is handy when we need to pass a Point object to any of the
+        matplotlib constructor requiring an (x, y) tuple, such as any of the
+        patches classes.
         """
         return (self.x, self.y)
 
-    def distance_to(self, other):
-        """
+    def distance_to(self, other) -> float:
+        """Return the distance to another Point object.
         """
         dx, dy = self - other
         return np.sqrt(dx**2. + dy**2.)
@@ -131,22 +126,32 @@ class Point(GeometricalEntity):
         """
         return '({:.2f}, {:.2f})'.format(self.x, self.y)
 
-    def move(self, dist: float, phi: float, name: str = None, intent: str = None):
-        """
+    def move(self, dist: float, phi: float, name: str = None):
+        """Return the point a distance dist from the initial one in a given
+        direction.
+
+        Parameters
+        ---------
+        dist : float
+            The distant from the initial point.
+
+        phi : float
+            The angle (in degrees) determing the direction to move along,
+            measured from the x-axis counter-clockwise.
         """
         x = self.x + dist * np.cos(np.radians(phi))
         y = self.y + dist * np.sin(np.radians(phi))
-        return Point(x, y, name, intent)
+        return Point(x, y, name)
 
-    def draw(self, offset, name: bool = True, ha: str = 'left', va: str = 'bottom', **kwargs):
-        """Draw the point.
+    def draw(self, offset, ha: str = 'left', va: str = 'bottom', **kwargs):
+        """Draw method.
         """
         kwargs.setdefault('color', 'black')
         kwargs.setdefault('markersize', 4.)
         x = self.x + offset.x
         y = self.y + offset.y
         plt.plot(x, y, 'o', **kwargs)
-        if name and (self.name is not None):
+        if self.name is not None:
             kwargs.pop('markersize')
             plt.text(x, y, ' {}'.format(self.name), ha=ha, va=va, **kwargs)
 
@@ -154,17 +159,18 @@ class Point(GeometricalEntity):
 
 class PolyLine(GeometricalEntity):
 
-    """
+    """Class representing a series of straight lines connecting a given set of
+    two-dimensional points.
     """
 
-    def __init__(self, *points, name: str = None, intent: str = None):
+    def __init__(self, *points, name: str = None):
         """Constructor.
         """
         self.points = points
-        super().__init__(name, intent)
+        super().__init__(name)
 
     def draw(self, offset, **kwargs):
-        """
+        """Draw method.
         """
         x = [point.x + offset.x for point in self.points]
         y = [point.y + offset.y for point in self.points]
@@ -175,28 +181,32 @@ class PolyLine(GeometricalEntity):
 
 class Line(PolyLine):
 
-    """
+    """Class representing a straight line.
     """
 
-    def __init__(self, p1, p2, name: str = None, intent: str = None):
+    def __init__(self, p1, p2, name: str = None):
         """Constructor.
+
+        Note that we have to pass the name as a keyword argument in order to
+        prevent the parent class from swallowing it as an additional point.
         """
-        super().__init__(p1, p2, name=name, intent=intent)
+        super().__init__(p1, p2, name=name)
         self.p1, self.p2 = self.points
 
     def length(self):
+        """Return the length of the line.
         """
-        """
-        dx, dy = (self.p2 - self.p1).xy()
-        return np.sqrt(dx ** 2. + dy **2.)
+        return self.p1.distance_to(p2)
 
-    def midpoint(self):
+    def midpoint(self, name: str = None):
+        """Return the midpoint of the line.
         """
-        """
-        return 0.5 * (self.p1 + self.p2)
+        p = 0.5 * (self.p1 + self.p2)
+        p.name = name
+        return p
 
     def slope(self):
-        """
+        """Return the slope of the line.
         """
         dx, dy = (self.p2 - self.p1).xy()
         return np.degrees(np.arctan2(dy, dx))
@@ -205,23 +215,23 @@ class Line(PolyLine):
 
 class Circle(GeometricalEntity):
 
-    """
+    """Class repesenting a circle.
     """
 
-    def __init__(self, center, radius: float, name: str = None, intent: str = None):
+    def __init__(self, center, radius: float, name: str = None):
         """Constructor.
         """
-        super().__init__(name, intent)
+        super().__init__(name)
         self.center = center
         self.radius = radius
 
     def diameter(self):
-        """
+        """Return the diameter of the circle.
         """
         return 2. * self.radius
 
     def draw(self, offset, **kwargs):
-        """
+        """Draw method.
         """
         xy = (self.center + offset).xy()
         circle = matplotlib.patches.Circle(xy, self.radius, fill=False, **kwargs)
@@ -231,11 +241,15 @@ class Circle(GeometricalEntity):
 
 class Cross(Circle):
 
-    """
+    """Class representing a cross.
+
+    It might look kind of weird to see this as a subclass of Circle, but we are
+    taking advantage of the fact that, once we call radius the lenght of the
+    arms, the constructors are essentially identical.
     """
 
     def draw(self, offset, **kwargs):
-        """
+        """Draw method.
         """
         p0 = self.center.move(self.radius, 180.)
         p1 = self.center.move(self.radius, 0.)
@@ -248,16 +262,19 @@ class Cross(Circle):
 
 class Hole(Circle):
 
-    """
+    """Class representing a hole.
+
+    And by hole, in this context, we really mean a circle plus a cross,
+    specifically for 2-d technical drafting.
     """
 
-    def __init__(self, center, diameter: float, name: str = None, intent: str = None):
+    def __init__(self, center, diameter: float, name: str = None):
+        """Constructor.
         """
-        """
-        super().__init__(center, 0.5 * diameter, name, intent)
+        super().__init__(center, 0.5 * diameter, name)
 
     def draw(self, offset, **kwargs):
-        """
+        """Draw method.
         """
         super().draw(offset, **kwargs)
         kwargs.update(color='black')
@@ -267,26 +284,26 @@ class Hole(Circle):
 
 class CircleArc(Circle):
 
-    """
+    """Class representing an arc of a circle.
     """
 
     def __init__(self, center, radius: float, phi1: float = 0., phi2: float = 360.,
-                 name: str = None, intent: str = None):
+                 name: str = None):
         """Constructor.
         """
-        super().__init__(center, radius, name, intent)
+        super().__init__(center, radius)
         self.phi1 = phi1
         self.phi2 = phi2
 
-    def start_point(self, name=None, intent=None):
+    def start_point(self, name=None):
         """
         """
-        return self.center.move(self.radius, self.phi1, name, intent)
+        return self.center.move(self.radius, self.phi1, name)
 
-    def end_point(self, name=None, intent=None):
+    def end_point(self, name=None):
         """
         """
-        return self.center.move(self.radius, self.phi2, name, intent)
+        return self.center.move(self.radius, self.phi2, name)
 
     def text_info(self) -> str:
         """Overloaded method.
@@ -324,29 +341,29 @@ class SpiralArc(GeometricalEntity):
     """
 
     def __init__(self, center, radius, phi1: float = 0., phi2: float = 360.,
-                 name: str = None, intent: str = None):
+                 name: str = None):
         """Constructor.
         """
-        super().__init__(name, intent)
+        super().__init__(name)
         self.center = center
         self.radius = radius
         self.phi1 = phi1
         self.phi2 = phi2
 
-    def point(self, phi, name=None, intent=None):
+    def point(self, phi, name=None):
         """
         """
-        return self.center.move(self.radius(phi), phi, name, intent)
+        return self.center.move(self.radius(phi), phi, name)
 
-    def start_point(self, name=None, intent=None):
+    def start_point(self, name=None):
         """
         """
-        return self.point(self.phi1, name, intent)
+        return self.point(self.phi1, name)
 
-    def end_point(self, name=None, intent=None):
+    def end_point(self, name=None):
         """
         """
-        return self.point(self.phi2, name, intent)
+        return self.point(self.phi2, name)
 
     def slope_at_start_point(self):
         """
