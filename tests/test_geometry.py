@@ -102,7 +102,10 @@ class TestGeometry(unittest.TestCase):
                 return locals()
 
         p = Pillow()
+        p.draw_construction(offset)
         p.draw(offset)
+        p.draw_reference_points(offset)
+
 
 
 if __name__ == '__main__':

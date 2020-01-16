@@ -86,6 +86,33 @@ class Point(GeometricalEntity):
         self.y = y
         super().__init__(name)
 
+    @classmethod
+    def __roundup(cls, val, digits=3):
+        """Small convenience function to round up the coordinates, used below in
+        __eq__() and __hash__().
+
+        With three digits we are essentially saying that we consider two points
+        to be the same if the difference in both coordinates is smaller than
+        1 um.
+        """
+        return round(10**digits * val)
+
+    def __eq__(self, other):
+        """Operator overload.
+
+        This (along with the fellow __hash__()) is useful if we want remove
+        duplicates from a list of points.
+        """
+        return self.__roundup(self.x) == self.__roundup(other.x) and\
+               self.__roundup(self.y) == self.__roundup(other.y)
+
+    def __hash__(self):
+        """Operator overload.
+
+        See the comment about __eq__().
+        """
+        return hash((self.__roundup(self.x), self.__roundup(self.y)))
+
     def __add__(self, other):
         """Operator overload.
         """
@@ -164,7 +191,20 @@ class Path(GeometricalEntity):
     geometrical entities.
     """
 
-    pass
+    def draw_construction(self, offset, **kwargs):
+        """Do-nothing method to provide a unified interface for drawing
+        intermediate steps of path construction.
+
+        Subclasses can re-implement this in odrer to do something useful.
+        """
+        pass
+
+    def reference_points(self):
+        """Do-nothing hook to return a set of refernce points for the shape.
+
+        In the default implementation this is returning an empty list.
+        """
+        return []
 
 
 
@@ -179,6 +219,11 @@ class PolyLine(Path):
         """
         self.points = points
         super().__init__(name)
+
+    def reference_points(self):
+        """Overloaded method.
+        """
+        return self.points
 
     def draw(self, offset, **kwargs):
         """Draw method.
@@ -229,6 +274,11 @@ class Line(PolyLine):
         """
         dx, dy = (self.p2 - self.p1).xy()
         return np.degrees(np.arctan2(dy, dx))
+
+    def text_info(self) -> str:
+        """Overloaded method.
+        """
+        return '{}--{}'.format(self.p1, self.p2)
 
 
 
@@ -350,7 +400,7 @@ class CircularArc(Circle):
         return self.start_phi + self.span
 
     def orientation(self):
-        """
+        """Return 1. if the arc is rotating counter-clockwise and -1. vice versa.
         """
         return np.sign(self.span)
 
@@ -368,6 +418,11 @@ class CircularArc(Circle):
         """Return the end point of the arc.
         """
         return self.center.move(self.radius, self.end_phi, name)
+
+    def reference_points(self):
+        """Overloaded method.
+        """
+        return [self.start_point(), self.end_point()]
 
     def start_slope(self):
         """Not implemented, yet.
@@ -527,6 +582,26 @@ class ParametricPolyPathBase(Path):
             if isinstance(obj, Path) and not isinstance(obj, self.__class__):
                 obj.name = name
                 self.add_path(obj)
+
+    def draw_reference_points(self, offset, **kwargs):
+        """Draw the reference points for all the sub-paths.
+        """
+        points = []
+        for path in self.path_dict.values():
+            for p in path.reference_points():
+                if p not in points:
+                    points.append(p)
+        for i, p in enumerate(points):
+            # Mind we create a copy of the original point so that we can
+            # set the name according to the index without modifying the
+            # original.
+            Point(p.x, p.y, '{:d}'.format(i + 1)).draw(offset, **kwargs)
+
+    def draw_construction(self, offset, **kwargs):
+        """Draw the object.
+        """
+        for path in self.path_dict.values():
+            path.draw_construction(offset, **kwargs)
 
     def draw(self, offset, **kwargs):
         """Draw the object.
