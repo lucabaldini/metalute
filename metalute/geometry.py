@@ -544,12 +544,17 @@ class SpiralArc(Circle):
         """
         return self.point(self.end_phi, name)
 
-    def slope_at_start_point(self):
+    def start_slope(self):
         """
         """
         return Line(self.point(self.start_phi), self.point(self.start_phi - 0.1)).slope()
 
-    def slope_at_end_point(self):
+    def end_slope(self):
+        """
+        """
+        pass
+
+    def draw_construction(self, offset, **kwargs):
         """
         """
         pass

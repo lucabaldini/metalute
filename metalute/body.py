@@ -90,7 +90,7 @@ class MusicManAxis:
         p1.draw(offset)
         p20 = arc1.end_point('p20')
         p20.draw(offset)
-        phi = arc1.slope_at_start_point()
+        phi = arc1.start_slope()
         p2 = p1.move(d2, phi, 'p2')
         p2.draw(offset)
         line1 = Line(p1, p2)
