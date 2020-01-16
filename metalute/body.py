@@ -20,12 +20,12 @@
 
 import numpy as np
 
-from metalute.geometry import Point, Line, CircularArc, SpiralArc, ParametricPolyPathBase
+from metalute.geometry import SpiralArc, ParametricPolyPathBase
 
 
 class MusicManAxis(ParametricPolyPathBase):
 
-    """
+    """Layout of the Music Man Axis guitar body.
     """
 
     DEFAULT_PAR_DICT  =  dict(d1 = 240.00,
