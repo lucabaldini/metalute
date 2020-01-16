@@ -474,21 +474,25 @@ class CircularArc(Circle):
         args = self.center, self.radius, self.start_phi, self.span
         return '{}, r = {:.2f}, phi = {:.2f} -> {:.2f}'.format(*args)
 
+    def _draw_center_angle(self, offset, **kwargs):
+        """
+        """
+        xy = (self.center + offset).xy()
+        kwargs.setdefault('color', 'lightgrey')
+        self.center.draw(offset, **kwargs)
+        kwargs.setdefault('ls', 'dashed')
+        PolyLine(self.start_point(), self.center, self.end_point()).draw(offset, **kwargs)
+        CircularArc(self.center, 8., self.start_phi, self.span).draw(offset, **kwargs)
+        return kwargs
+
     def draw_construction(self, offset, **kwargs):
         """Draw the geometrical construction of the circular arc.
 
         Note that this should always be called before the draw() method, so that
         all the paths get overlaid in the right order.
         """
-        xy = (self.center + offset).xy()
-        kwargs.setdefault('color', 'lightgrey')
-        self.center.draw(offset, **kwargs)
-        kwargs.setdefault('ls', 'dashed')
+        kwargs = self._draw_center_angle(offset, **kwargs)
         Circle(self.center, self.radius).draw(offset, **kwargs)
-        PolyLine(self.start_point(), self.center, self.end_point()).draw(offset, **kwargs)
-        # This should definitely be improved.
-        r = min(0.35 * self.radius, 8.)
-        CircularArc(self.center, r, self.start_phi, self.span).draw(offset, **kwargs)
 
     def draw(self, offset, **kwargs):
         """Draw the circular arc.
@@ -506,66 +510,48 @@ class CircularArc(Circle):
 
 
 
-class SpiralArc(Circle):
+class SpiralArc(CircularArc):
 
     """Class describing a spiral arc.
 
-    Warning
-    -------
-    This might subclass CircleArc.
+    This is slightly more sophisticated arc than CircularArc, where the radius
+    is not constant, but rather a function of phi.
     """
 
-    def __init__(self, center, radius, start_phi: float = 0., span: float = 360.,
-                 name: str = None):
-        """Constructor.
-        """
-        super().__init__(center, radius, name)
-        self.start_phi = start_phi
-        self.span = span
-
-    @property
-    def end_phi(self):
-        """Return the angle of the end point with respect to the center.
-        """
-        return self.start_phi + self.span
-
-    def orientation(self):
-        """Return 1. if the arc is rotating counter-clockwise and -1. vice versa.
-        """
-        return np.sign(self.span)
-
     def point(self, phi, name=None):
-        """
+        """Return the point on the arc at a specified phi value.
         """
         return self.center.move(self.radius(phi), phi, name)
 
     def start_point(self, name=None):
-        """
+        """Return the start point.
         """
         return self.point(self.start_phi, name)
 
     def end_point(self, name=None):
-        """
+        """Return the end point.
         """
         return self.point(self.end_phi, name)
 
     def start_slope(self):
-        """
+        """Return the slope of the line connecting with the arc at the start
+        point.
         """
         return Line(self.point(self.start_phi), self.point(self.start_phi - 0.1)).slope()
 
     def end_slope(self):
+        """Return the slope of the line connecting with the arc at the start
+        point.
         """
-        """
-        pass
+        raise NotImplementedError
 
     def draw_construction(self, offset, **kwargs):
+        """Overloaded method.
         """
-        """
-        pass
+        kwargs = self._draw_center_angle(offset, **kwargs)
 
     def draw(self, offset, num_points: int = 250, construction: bool = True, **kwargs):
-        """
+        """Overloaded method.
         """
         kwargs.setdefault('color', 'black')
         x0, y0 = (self.center + offset).xy()
@@ -573,16 +559,6 @@ class SpiralArc(Circle):
         r = self.radius(phi)
         x = x0 + r * np.cos(np.radians(phi))
         y = y0 + r * np.sin(np.radians(phi))
-        # This needs to go first, as the construction is in background.
-        if construction:
-            fmt = dict(ls='dashed', color='lightgrey')
-            p1 = self.start_point()
-            p2 = self.end_point()
-            PolyLine(p1, self.center, p2).draw(offset, **fmt)
-            d = 10.
-            arc = matplotlib.patches.Arc((x0, y0), d, d, 0., self.start_phi, self.end_phi, **fmt)
-            plt.gca().add_patch(arc)
-            self.center.draw(offset, color='lightgrey')
         plt.plot(x, y, **kwargs)
 
 
