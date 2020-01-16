@@ -32,7 +32,7 @@ class GeometricalEntity:
 
     This is a base class from which all geometrical entities defined in this
     module (such as points, lines and shapes) inherit from. It encapsulates the
-    properties (e.g., name and label) that are common to all such entities.
+    properties (e.g., the name) that are common to all such entities.
 
     Parameters
     ---------
@@ -156,8 +156,19 @@ class Point(GeometricalEntity):
             plt.text(x, y, ' {}'.format(self.name), ha=ha, va=va, **kwargs)
 
 
+class Path(GeometricalEntity):
 
-class PolyLine(GeometricalEntity):
+    """Do nothing GeometricalEntity subclass.
+
+    This is esentially to distinguish points from paths with the possible
+    geometrical entities.
+    """
+
+    pass
+
+
+
+class PolyLine(Path):
 
     """Class representing a series of straight lines connecting a given set of
     two-dimensional points.
@@ -182,6 +193,8 @@ class PolyLine(GeometricalEntity):
 class Line(PolyLine):
 
     """Class representing a straight line.
+
+    # WARNING: change p1 and p2 to start_point and end_point.
     """
 
     def __init__(self, p1, p2, name: str = None):
@@ -192,6 +205,12 @@ class Line(PolyLine):
         """
         super().__init__(p1, p2, name=name)
         self.p1, self.p2 = self.points
+
+    @classmethod
+    def from_start_point_and_slope(self, start_point, slope, length):
+        """
+        """
+        pass
 
     def length(self):
         """Return the length of the line.
@@ -213,7 +232,7 @@ class Line(PolyLine):
 
 
 
-class Circle(GeometricalEntity):
+class Circle(Path):
 
     """Class repesenting a circle.
     """
@@ -282,6 +301,218 @@ class Hole(Circle):
 
 
 
+class CircularArc(Circle):
+
+    """Class representing a circular arc.
+
+    Although this is using the matplotlib.patches.Arc class under the hood, the
+    interface in the constructor is deliberately different, as we use the
+    orientation of the initial point (start_phi) and the span (delta_phi),
+    rather than the initial and the final angles (theta1 and theta2).
+    This is more germane to the way we usually define arcs, i.e., by the
+    starting point and the span.
+
+    Also, in matplotlib the arc is always drawn in the counterclockwise
+    direction, while here we always keep track of the start point and the end
+    point, and we control the direction by allowing the arc measure to be
+    negative.
+
+    Parameters
+    ---------
+    center : Point instance
+        The center of the circular arc.
+
+    radius : float
+        The radius of the circular arc
+
+    start_phi : float, in [0., 360.]
+        The angle (in degrees) subtended by the starting point of the arc.
+
+    span : float, in [-360, 360]
+        The arc measure in degrees.
+
+    name : string (optional)
+        The name of the arc.
+    """
+
+    def __init__(self, center, radius: float, start_phi: float = 0.,
+                 span: float = 360., name: str = None):
+        """Constructor.
+        """
+        super().__init__(center, radius, name)
+        self.start_phi = start_phi
+        self.span = span
+
+    @property
+    def end_phi(self):
+        """Return the angle of the end point with respect to the center.
+        """
+        return self.start_phi + self.span
+
+    def orientation(self):
+        """
+        """
+        return np.sign(self.span)
+
+    def length(self):
+        """Return the length of the arc.
+        """
+        return 2. * np.pi * self.radius * self.span / 360.
+
+    def start_point(self, name=None):
+        """Return the start point of the arc.
+        """
+        return self.center.move(self.radius, self.start_phi, name)
+
+    def end_point(self, name=None):
+        """Return the end point of the arc.
+        """
+        return self.center.move(self.radius, self.end_phi, name)
+
+    def start_slope(self):
+        """Not implemented, yet.
+
+        We might want to implement this functionality of we ever need to connect
+        more paths at the start of arc, rather than at the end (which is by far
+        the most common case).
+        """
+        raise NotImplementedError
+
+    def end_slope(self):
+        """Return the slope of the line that connects to the end point of the
+        arc in such a way that the combined path is differentiable all the way
+        through.
+        """
+        return self.end_phi + 90. * self.orientation()
+
+    def connecting_line(self, length, name=None):
+        """Return the line that connects to the end point of the arc in such a
+        way that the combined path is differentiable all the way through.
+        """
+        start_point = self.end_point()
+        end_point = start_point.move(length, self.end_slope())
+        return Line(start_point, end_point, name)
+
+    def connecting_circular_arc(self, radius, span, name=None):
+        """Return the circular arc that connects to the end point of the arc in
+        such a way that the combined path is differentiable all the way through.
+
+        Parameters
+        ---------
+        radius : float
+            The radius of the connecting arc. If the radius is negative the
+            connecting arc is intended as the one with the opposite curvature
+            of the original.
+
+        span : float
+            The measure of the connecting arc.
+        """
+        slope = self.end_phi
+        if radius > 0:
+            slope += 180.
+        radius = abs(radius)
+        center = self.end_point().move(radius, slope)
+        return CircularArc(center, radius, self.end_phi, span * self.orientation())
+
+    def text_info(self) -> str:
+        """Overloaded method.
+        """
+        args = self.center, self.radius, self.start_phi, self.span
+        return '{}, r = {:.2f}, phi = {:.2f} -> {:.2f}'.format(*args)
+
+    def draw_construction(self, offset, **kwargs):
+        """Draw the geometrical construction of the circular arc.
+
+        Note that this should always be called before the draw() method, so that
+        all the paths get overlaid in the right order.
+        """
+        xy = (self.center + offset).xy()
+        kwargs.setdefault('color', 'lightgrey')
+        self.center.draw(offset, **kwargs)
+        kwargs.setdefault('ls', 'dashed')
+        Circle(self.center, self.radius).draw(offset, **kwargs)
+        PolyLine(self.start_point(), self.center, self.end_point()).draw(offset, **kwargs)
+        # This should definitely be improved.
+        r = min(0.35 * self.radius, 8.)
+        CircularArc(self.center, r, self.start_phi, self.span).draw(offset, **kwargs)
+
+    def draw(self, offset, **kwargs):
+        """Draw the circular arc.
+        """
+        xy = (self.center + offset).xy()
+        d = self.diameter()
+        theta1 = self.start_phi
+        theta2 = self.end_phi
+        # Mind that matplotlib is always drawing arcs counterclockwise, so we
+        # do have to swap the extremes if the arc measure is negative.
+        if self.span < 0.:
+            theta1, theta2 = theta2, theta1
+        arc = matplotlib.patches.Arc(xy, d, d, 0., theta1, theta2, **kwargs)
+        plt.gca().add_patch(arc)
+
+
+
+class ParametricPolyPath(Path):
+
+    """Class describing a parametric curve constructed as a series of connecting
+    path elements.
+    """
+
+    DEFAULT_PAR_DICT = {}
+
+    def __init__(self, **kwargs):
+        """At the construction stage the default parameters are updated
+        based on whatever is passed as an argument.
+
+        Mind the first line is a shallow copy, so care should be taken if any
+        of the parameter is mutable (but we should typically stick to simple
+        things, like numbers or booleans).
+        """
+        self.par_dict = self.DEFAULT_PAR_DICT.copy()
+        self.par_dict.update(**kwargs)
+        self.anchor = Point(0., 0., 'anchor')
+        self.path_dict = {}
+        self.__finalize(self.construct())
+
+    def __getattr__(self, name):
+        """
+        """
+        return self.par_dict[name]
+
+    def construct(self):
+        """
+        """
+        raise NotImplementedError
+
+    def add_path(self, path):
+        """
+        """
+        self.path_dict[path.name] = path
+
+    def __finalize(self, locals_):
+        """
+        """
+        for name, obj in locals_.items():
+            if isinstance(obj, Path) and not isinstance(obj, ParametricPolyPath):
+                obj.name = name
+                self.add_path(obj)
+
+    def draw(self, offset, **kwargs):
+        """
+        """
+        for path in self.path_dict.values():
+            path.draw(offset, **kwargs)
+
+
+
+
+
+
+
+"""Following to be deprecated.
+"""
+
+
 class CircleArc(Circle):
 
     """Class representing an arc of a circle.
@@ -335,7 +566,7 @@ class CircleArc(Circle):
 
 
 
-class SpiralArc(GeometricalEntity):
+class SpiralArc(Path):
 
     """Class describing a spiral arc.
     """
