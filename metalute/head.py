@@ -22,7 +22,7 @@ import numpy as np
 
 from metalute.units import inches_to_mm
 from metalute.matplotlib_ import plt
-from metalute.geometry import Point, PolyLine, CircleArc, Hole
+from metalute.geometry import Point, PolyLine, CircularArc, Hole
 from metalute.dimension import dim, vdim
 
 
@@ -96,7 +96,7 @@ class Headstock:
         """
         self.draw_top_axis(offset)
         for patch in self.patch_dict.values():
-            if isinstance(patch, CircleArc):
+            if isinstance(patch, CircularArc):
                 patch.draw(offset, full_circle=construction, radii=construction)
             else:
                 patch.draw(offset)
@@ -140,36 +140,36 @@ class StratoHeadstock(Headstock):
         line1 = PolyLine(p1, p2, name='line1')
         # First circle.
         c1 = p2.move(self.r1, 90., 'c1')
-        arc1 = CircleArc(c1, self.r1, -90., self.phi1 - 90., 'arc1')
+        arc1 = CircularArc(c1, self.r1, -90., self.phi1 - 90., 'arc1')
         p3 = arc1.end_point('p3')
         # Second circle.
         c2 = p3.move(self.r2, arc1.phi2, 'c2')
-        arc2 = CircleArc(c2, self.r2, 90 + self.phi1 - self.phi2, 90. + self.phi1, 'arc2')
+        arc2 = CircularArc(c2, self.r2, 90 + self.phi1 - self.phi2, 90. + self.phi1, 'arc2')
         p4 = arc2.start_point('p4')
         # Long straight segment.
         p5 = p4.move(self.d2, arc2.phi1 - 90., 'p5')
         line2 = PolyLine(p4, p5, name='line2')
         # Third circle.
         c3 = p5.move(self.r3, arc2.phi1 - 180., 'c3')
-        arc3 = CircleArc(c3, self.r3, arc2.phi1 - self.phi3, arc2.phi1, 'arc3')
+        arc3 = CircularArc(c3, self.r3, arc2.phi1 - self.phi3, arc2.phi1, 'arc3')
         p6 = arc3.start_point('p6')
         # Fourth circle.
         c4 = p6.move(self.r4, arc3.phi1, 'c4')
-        arc4 = CircleArc(c4, self.r4, 180. + arc3.phi1, 180. + arc3.phi1 + self.phi4, 'arc4')
+        arc4 = CircularArc(c4, self.r4, 180. + arc3.phi1, 180. + arc3.phi1 + self.phi4, 'arc4')
         p7 = arc4.end_point('p7')
         # Fifth circle.
         c5 = p7.move(self.r5, arc4.phi2 + 180., 'c5')
-        arc5 = CircleArc(c5, self.r5, arc4.phi2, arc4.phi2 + self.phi5, 'arc5')
+        arc5 = CircularArc(c5, self.r5, arc4.phi2, arc4.phi2 + self.phi5, 'arc5')
         p8 = arc5.end_point('p8')
         # Sixth circle.
         c6 = p8.move(self.r6, arc5.phi2, 'c6')
-        arc6 = CircleArc(c6, self.r6, 180. + arc5.phi2 - self.phi6, 180. + arc5.phi2, 'arc6')
+        arc6 = CircularArc(c6, self.r6, 180. + arc5.phi2 - self.phi6, 180. + arc5.phi2, 'arc6')
         p9 = arc6.start_point('p9')
         # Last circle---here things are a little bit tricky :-)
         phi = np.degrees(np.arccos(1. - (-0.5 * self.w - p9.y) / self.r7))
         dx = self.r7 * np.sin(np.radians(phi))
         c7 = Point(p9.x - dx, -0.5 * self.w - self.r7, 'c7')
-        arc7 = CircleArc(c7, self.r7, 90. - phi, 90., 'arc7')
+        arc7 = CircularArc(c7, self.r7, 90. - phi, 90., 'arc7')
         p10 = arc7.end_point('p10')
         # And finally: close the loop.
         p11 = self.anchor.move(0.5 * self.w, -90., 'p11')

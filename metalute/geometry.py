@@ -616,61 +616,6 @@ class ParametricPolyPathBase(Path):
 
 """Following to be deprecated.
 """
-
-
-class CircleArc(Circle):
-
-    """Class representing an arc of a circle.
-    """
-
-    def __init__(self, center, radius: float, phi1: float = 0., phi2: float = 360.,
-                 name: str = None):
-        """Constructor.
-        """
-        super().__init__(center, radius)
-        self.phi1 = phi1
-        self.phi2 = phi2
-
-    def start_point(self, name=None):
-        """
-        """
-        return self.center.move(self.radius, self.phi1, name)
-
-    def end_point(self, name=None):
-        """
-        """
-        return self.center.move(self.radius, self.phi2, name)
-
-    def text_info(self) -> str:
-        """Overloaded method.
-        """
-        return '{}, r = {:.2f}, phi = {:.2f}--{:.2f}'.format(self.center, self.radius, self.phi1, self.phi2)
-
-    def draw(self, offset, full_circle: bool = True, radii: bool = True, **kwargs):
-        """
-        """
-        xy = (self.center + offset).xy()
-        # This needs to go first, as the construction is in background.
-        if full_circle:
-            fmt = dict(ls='dashed', fill=False, color='lightgrey')
-            circle = plt.Circle(xy, self.radius, **fmt, **kwargs)
-            plt.gca().add_patch(circle)
-        if radii:
-            fmt = dict(ls='dashed', color='lightgrey')
-            p1 = self.start_point()
-            p2 = self.end_point()
-            PolyLine(p1, self.center, p2).draw(offset, **fmt)
-            d = min(0.80 * self.radius, 10.)
-            arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **fmt, **kwargs)
-            plt.gca().add_patch(arc)
-            self.center.draw(offset, color='lightgrey')
-        # And now the actual arc.
-        d = 2 * self.radius
-        arc = matplotlib.patches.Arc(xy, d, d, 0., self.phi1, self.phi2, **kwargs)
-        plt.gca().add_patch(arc)
-
-
-
 class SpiralArc(Path):
 
     """Class describing a spiral arc.

@@ -22,7 +22,7 @@ import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.optimize import curve_fit, leastsq
 
-from metalute.geometry import Point, Line, CircleArc
+from metalute.geometry import Point, Line, CircularArc
 
 
 def distance_from_center(x, y, x0, y0):
@@ -51,7 +51,7 @@ def fit_circle_arc(x, y, imin: int = 0, imax: int = -1, invert: bool = False):
     phi2 = Line(center, Point(x[-1], y[-1])).slope()
     if invert:
         phi1, phi2 = phi2, phi1
-    arc = CircleArc(center, radius, phi1, phi2)
+    arc = CircularArc(center, radius, phi1, phi2)
     print(arc)
     return arc
 

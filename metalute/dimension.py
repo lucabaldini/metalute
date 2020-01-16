@@ -18,7 +18,7 @@
 """Dimensioning facilities.
 """
 
-from metalute.geometry import Point, Line, CircleArc
+from metalute.geometry import Point, Line, CircularArc
 from metalute.matplotlib_ import plt
 
 
@@ -33,10 +33,10 @@ class Arrow(Line):
         super().draw(**fmt)
         phi = self.slope() + 90.
         p = self.end_point.move(head_radius, phi)
-        CircleArc(p, head_radius, phi + 90., phi + 180.).draw(full_circle=False, radii=False, **fmt)
+        CircularArc(p, head_radius, phi + 90., phi + 180.).draw(full_circle=False, radii=False, **fmt)
         phi -= 180.
         p = self.end_point.move(head_radius, phi)
-        CircleArc(p, head_radius, phi - 180., phi - 90.).draw(full_circle=False, radii=False, **fmt)
+        CircularArc(p, head_radius, phi - 180., phi - 90.).draw(full_circle=False, radii=False, **fmt)
 
 
 
