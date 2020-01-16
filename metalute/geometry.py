@@ -505,9 +505,14 @@ class CircularArc(Circle):
         plt.gca().add_patch(arc)
 
 
+
 class SpiralArc(Circle):
 
     """Class describing a spiral arc.
+
+    Warning
+    -------
+    This might subclass CircleArc.
     """
 
     def __init__(self, center, radius, start_phi: float = 0., span: float = 360.,
