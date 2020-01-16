@@ -452,10 +452,31 @@ class CircularArc(Circle):
 
 
 
-class ParametricPolyPath(Path):
+class ParametricPolyPathBase(Path):
 
     """Class describing a parametric curve constructed as a series of connecting
     path elements.
+
+    This is an admittedly complicated object, that is meant to creat complex
+    shapes (e.g., guitar bodies or headstocks) combining simpler paths, such as
+    lines or arcs.
+
+    At the fundamental level, a ParametricPolyPath encapsulates two
+    dictionaries, the first one holding all the parameter values, and the second
+    containing all the path objects composing the complex shape. The basic rules
+    are:
+
+    * all the keyword arguments passed to the constructor update the default
+    parameter values;
+    * the class is designed in such a way that cannot be directly instantiated,
+    and *has to be subclassed*, instead; all subclasses should overload the
+    construct() method to build the actual complex path;
+    * the construct() method should always return the return value of a locals()
+    call;
+    * the constructor of the base class picks up the return value of construct()
+    and collects all the Path objects in there, populating the corresponding
+    dictionary; from this point on, the complex path is ready to be used
+    (e.g., you can draw it).
     """
 
     DEFAULT_PAR_DICT = {}
@@ -475,30 +496,40 @@ class ParametricPolyPath(Path):
         self.__finalize(self.construct())
 
     def __getattr__(self, name):
-        """
+        """Overloaded method so that the parameters can be accessed by name
+        within the class.
         """
         return self.par_dict[name]
 
     def construct(self):
-        """
+        """No-op method to be overloaded by derived classes.
+
+        This is where all the dirty work should happen.
         """
         raise NotImplementedError
 
     def add_path(self, path):
-        """
+        """Add a path to the complex shape.
+
+        Note that all the Path objects are indexed by name in the dictionary.
         """
         self.path_dict[path.name] = path
 
     def __finalize(self, locals_):
-        """
+        """Collect all the Path objects returned by construct() and put them
+        into the proper dictionary.
+
+        Note that self is returned by the locals() call in the subclass, so that
+        we need to add an explicit check, here, in order to avoid infinite
+        recursion.
         """
         for name, obj in locals_.items():
-            if isinstance(obj, Path) and not isinstance(obj, ParametricPolyPath):
+            if isinstance(obj, Path) and not isinstance(obj, self.__class__):
                 obj.name = name
                 self.add_path(obj)
 
     def draw(self, offset, **kwargs):
-        """
+        """Draw the object.
         """
         for path in self.path_dict.values():
             path.draw(offset, **kwargs)

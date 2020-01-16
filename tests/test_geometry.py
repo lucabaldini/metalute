@@ -22,7 +22,7 @@ import unittest
 import sys
 
 from metalute.blueprint import blueprint
-from metalute.geometry import Point, Line, CircularArc, ParametricPolyPath
+from metalute.geometry import Point, Line, CircularArc, ParametricPolyPathBase
 from metalute.matplotlib_ import plt
 if sys.flags.interactive:
     plt.ion()
@@ -84,7 +84,7 @@ class TestGeometry(unittest.TestCase):
         blueprint('Test ParametricPolyPath', 'A4')
         offset = Point(0., 0.)
 
-        class Pillow(ParametricPolyPath):
+        class Pillow(ParametricPolyPathBase):
 
             DEFAULT_PAR_DICT = dict(width=75., height=25.)
 
