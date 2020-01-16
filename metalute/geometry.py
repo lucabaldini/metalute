@@ -505,6 +505,77 @@ class CircularArc(Circle):
         plt.gca().add_patch(arc)
 
 
+class SpiralArc(Circle):
+
+    """Class describing a spiral arc.
+    """
+
+    def __init__(self, center, radius, start_phi: float = 0., span: float = 360.,
+                 name: str = None):
+        """Constructor.
+        """
+        super().__init__(center, radius, name)
+        self.start_phi = start_phi
+        self.span = span
+
+    @property
+    def end_phi(self):
+        """Return the angle of the end point with respect to the center.
+        """
+        return self.start_phi + self.span
+
+    def orientation(self):
+        """Return 1. if the arc is rotating counter-clockwise and -1. vice versa.
+        """
+        return np.sign(self.span)
+
+    def point(self, phi, name=None):
+        """
+        """
+        return self.center.move(self.radius(phi), phi, name)
+
+    def start_point(self, name=None):
+        """
+        """
+        return self.point(self.start_phi, name)
+
+    def end_point(self, name=None):
+        """
+        """
+        return self.point(self.end_phi, name)
+
+    def slope_at_start_point(self):
+        """
+        """
+        return Line(self.point(self.start_phi), self.point(self.start_phi - 0.1)).slope()
+
+    def slope_at_end_point(self):
+        """
+        """
+        pass
+
+    def draw(self, offset, num_points: int = 250, construction: bool = True, **kwargs):
+        """
+        """
+        kwargs.setdefault('color', 'black')
+        x0, y0 = (self.center + offset).xy()
+        phi = np.linspace(self.start_phi, self.end_phi, num_points)
+        r = self.radius(phi)
+        x = x0 + r * np.cos(np.radians(phi))
+        y = y0 + r * np.sin(np.radians(phi))
+        # This needs to go first, as the construction is in background.
+        if construction:
+            fmt = dict(ls='dashed', color='lightgrey')
+            p1 = self.start_point()
+            p2 = self.end_point()
+            PolyLine(p1, self.center, p2).draw(offset, **fmt)
+            d = 10.
+            arc = matplotlib.patches.Arc((x0, y0), d, d, 0., self.start_phi, self.end_phi, **fmt)
+            plt.gca().add_patch(arc)
+            self.center.draw(offset, color='lightgrey')
+        plt.plot(x, y, **kwargs)
+
+
 
 class ParametricPolyPathBase(Path):
 
@@ -607,72 +678,3 @@ class ParametricPolyPathBase(Path):
         """
         for path in self.path_dict.values():
             path.draw(offset, **kwargs)
-
-
-
-
-
-
-
-"""Following to be deprecated.
-"""
-class SpiralArc(Path):
-
-    """Class describing a spiral arc.
-    """
-
-    def __init__(self, center, radius, phi1: float = 0., phi2: float = 360.,
-                 name: str = None):
-        """Constructor.
-        """
-        super().__init__(name)
-        self.center = center
-        self.radius = radius
-        self.phi1 = phi1
-        self.phi2 = phi2
-
-    def point(self, phi, name=None):
-        """
-        """
-        return self.center.move(self.radius(phi), phi, name)
-
-    def start_point(self, name=None):
-        """
-        """
-        return self.point(self.phi1, name)
-
-    def end_point(self, name=None):
-        """
-        """
-        return self.point(self.phi2, name)
-
-    def slope_at_start_point(self):
-        """
-        """
-        return Line(self.point(self.phi1), self.point(self.phi1 - 0.1)).slope()
-
-    def slope_at_end_point(self):
-        """
-        """
-        pass
-
-    def draw(self, offset, num_points: int = 250, construction: bool = True, **kwargs):
-        """
-        """
-        kwargs.setdefault('color', 'black')
-        x0, y0 = (self.center + offset).xy()
-        phi = np.linspace(self.phi1, self.phi2, num_points)
-        r = self.radius(phi)
-        x = x0 + r * np.cos(np.radians(phi))
-        y = y0 + r * np.sin(np.radians(phi))
-        # This needs to go first, as the construction is in background.
-        if construction:
-            fmt = dict(ls='dashed', color='lightgrey')
-            p1 = self.start_point()
-            p2 = self.end_point()
-            PolyLine(p1, self.center, p2).draw(offset, **fmt)
-            d = 10.
-            arc = matplotlib.patches.Arc((x0, y0), d, d, 0., self.phi1, self.phi2, **fmt)
-            plt.gca().add_patch(arc)
-            self.center.draw(offset, color='lightgrey')
-        plt.plot(x, y, **kwargs)
