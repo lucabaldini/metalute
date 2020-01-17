@@ -26,7 +26,6 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 from metalute.fit import fit_circle_arc
-from metalute.head import StratoHeadstock
 from metalute.body import MusicManAxis
 from metalute.geometry import Point, Circle, CircularArc, Line
 from metalute.matplotlib_ import plt
