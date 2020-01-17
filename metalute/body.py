@@ -63,7 +63,7 @@ class MusicManAxis(ParametricPolyPathBase):
                          'r12': 52.25,
                          'span12': 68.00,
                          'r13': 179.15,
-                         'span13 ':  24.49
+                         'span13':  24.49
                         }
 
     @staticmethod

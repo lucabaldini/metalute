@@ -244,3 +244,69 @@ class MusicMan(HeadstockBase):
         # This is horrible, as the last points are added by hand.
         self.add_hole(Point(76.75, -13.35))
         self.add_hole(Point(52.05, -20.02))
+
+
+
+class BlissContour(HeadstockContourBase):
+
+    """My first design based on the Music man idea.
+    """
+
+    DEFAULT_PAR_DICT = {'width_at_nut': 43.00,
+                        'stub': 10.00,
+                        'top': 37.50,
+                        'main_slope': 15.00,
+                        'main_radius': 24.00,
+                        'corner_radius': 3.00
+                        }
+
+    def construct(self):
+        """Overloaded method.
+        """
+        r1 = 10.
+        span1 = 60.
+        span3 = 180.
+        offset3 = -0.26
+
+        p1 = self.anchor.vmove(0.5 * self.width_at_nut)
+        line1 = Line(p1, p1.hmove(self.stub))
+        arc1 = line1.connecting_circular_arc(r1, span1)
+        # Calculate the length of the line that brings the very top of the
+        # following rounding circle to be at the y of the top parameter.
+        alpha = np.radians(arc1.end_slope())
+        dh = self.corner_radius * (1. - np.cos(alpha))
+        l = (self.top - arc1.end_point().y - dh) / np.sin(alpha)
+        line2 = arc1.connecting_line(l)
+        span = line2.slope() + self.main_slope
+        arc2 = line2.connecting_circular_arc(-self.corner_radius, -span)
+        # At this point the y coordinate of the top of the small rounding arc
+        # should be exactly top.
+        assert arc2.center.vmove(-arc2.radius).y == self.top
+        # The end point of the next line must be such that the center of the
+        # big circle goes where expected.
+        hc = offset3 * self.width_at_nut
+        dh = self.main_radius * np.cos(np.radians(self.main_slope))
+        l = (arc2.end_point().y - hc - dh) / np.sin(np.radians(self.main_slope))
+        line3 = arc2.connecting_line(-l)
+        arc3 = line3.connecting_circular_arc(-self.main_radius, -span3)
+        print(arc3.center.y, offset3 * self.width_at_nut)
+
+        # p2 = p1.hmove(self.d1)
+        # line1 = Line(p1, p2)
+        # arc1 = line1.connecting_circular_arc(self.r1, self.span1)
+        # line2 = arc1.connecting_line(self.d2)
+        # arc2 = line2.connecting_circular_arc(-self.r2, -self.span2)
+        # line3 = arc2.connecting_line(-self.d3)
+        # arc3 = line3.connecting_circular_arc(-self.r3, -self.span3)
+        # c4 = arc3.end_point().move(self.r4, self.phi4)
+        # arc4 = CircularArc(c4, self.r4, self.phi4 + 180., self.span4)
+        # line4 = arc4.connecting_line(self.d4)
+        # arc5 = line4.connecting_circular_arc(-self.r5, -self.span5)
+        # arc6 = arc5.connecting_circular_arc(-self.r6, -self.span6)
+        # line5 = arc6.connecting_line(self.d5)
+        # # Close the loop---again, a but tricky.
+        # span = 180. - line5.slope()
+        # r = (-0.5 * self.width_at_nut - line5.end_point().y) / (1. - np.cos(np.radians(span)))
+        # arc7 = line5.connecting_circular_arc(r, span)
+        # line6 = arc7.connecting_line(arc7.end_point().x)
+        return locals()

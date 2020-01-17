@@ -85,7 +85,7 @@ class TestMusicManAxis(unittest.TestCase):
         fit_circle_arc(self.xb, self.yb, 42, 44, invert=True).draw(offset)
         fit_circle_arc(self.xb, self.yb, 44, 47).draw(offset)
 
-    def _test_body_accuracy(self):
+    def test_body_accuracy(self):
         """
         """
         blueprint('Music Man Axis body accuracy', 'A1')
@@ -94,7 +94,7 @@ class TestMusicManAxis(unittest.TestCase):
         body = Body()
         body.draw(offset)
 
-    def _test_body_draw(self):
+    def test_body_draw(self):
         """
         """
         blueprint('Music Man Axis', 'A1')
