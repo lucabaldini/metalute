@@ -26,9 +26,9 @@ from metalute.geometry import Point, Line, PolyLine, CircularArc, Hole, Parametr
 from metalute.dimension import dim, vdim
 
 
-class FenderStatocasterContour(ParametricPolyPathBase):
+class FenderStratocasterContour(ParametricPolyPathBase):
 
-    """Contour for the Fender Stratocaster headstock. 
+    """Contour for the Fender Stratocaster headstock.
     """
 
     DEFAULT_PAR_DICT = {'w': inches_to_mm(1.650),
@@ -70,6 +70,38 @@ class FenderStatocasterContour(ParametricPolyPathBase):
         arc7 = CircularArc(c7, self.r7, 90. - phi, phi)
         line3 = arc7.connecting_line(arc7.end_point().x)
         return locals()
+
+
+
+class FenderStratocaster:
+
+    """
+    """
+
+    def __init__(self, **kwargs):
+        """
+        """
+        self.countour = FenderStratocasterContour()
+
+    def draw(self, offset, **kwargs):
+        """
+        """
+        hole_distance_to_edge = 11.35
+        hole_diameter = 10.
+        string_pitch = 7.15
+        g_string_offset = 1.15
+
+        self.countour.draw(offset, **kwargs)
+        #phi = self.phi1 - self.phi2
+        #pivot = p4.move(hole_distance_to_edge, arc2.phi1 - 180., 'pivot')
+        #scale = 1. / abs(np.sin(np.radians(phi)))
+        #pitch = string_pitch * scale
+        #offset = (pivot.y + g_string_offset) * scale - 3. * pitch
+        #for i in range(6):
+        #    _p = pivot.move(i * pitch + offset, phi)
+        #    h = Hole(_p, hole_diameter, 'h{}'.format(i + 1))
+        #    self.add_holes(h)
+
 
 
 

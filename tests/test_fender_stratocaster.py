@@ -26,7 +26,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 from metalute.fit import fit_circle_arc
-from metalute.head import FenderStatocasterContour
+from metalute.head import FenderStratocasterContour, FenderStratocaster
 from metalute.geometry import Point, Circle, CircularArc, Line
 from metalute.matplotlib_ import plt
 from metalute.blueprint import blueprint
@@ -71,7 +71,7 @@ class TestFenderStratocaster(unittest.TestCase):
         x, y, xh, yh = self.load_data()
         offset = Point(-80., 0.)
         plt.plot(x + offset.x, y + offset.y, 'o')
-        head = FenderStatocasterContour()
+        head = FenderStratocasterContour()
         head.draw(offset)
 
     def test_draw(self):
@@ -79,10 +79,10 @@ class TestFenderStratocaster(unittest.TestCase):
         """
         blueprint('Fender Stratocaster', 'A4')
         offset = Point(-80., 0.)
-        head = FenderStatocasterContour()
-        head.draw_construction(offset)
+        head = FenderStratocaster()
+        #head.draw_construction(offset)
         head.draw(offset)
-        head.draw_reference_points(offset)
+        #head.draw_reference_points(offset)
 
 
 
