@@ -24,7 +24,7 @@ import os
 
 import numpy as np
 
-from metalute.head import FenderStratocaster, MusicManContour
+from metalute.head import FenderStratocaster, MusicMan
 from metalute.matplotlib_ import plt
 from metalute.blueprint import blueprint
 from metalute.geometry import Point
@@ -45,9 +45,9 @@ class TestHead(unittest.TestCase):
         """
         offset = Point(-80., 0.)
         blueprint('Strato', 'A4')
-        FenderStratocaster().draw(offset)
+        FenderStratocaster().draw_top(offset)
         blueprint('Music Man', 'A4')
-        MusicManContour().draw(offset)
+        MusicMan().draw_top(offset)
 
 
 if __name__ == '__main__':

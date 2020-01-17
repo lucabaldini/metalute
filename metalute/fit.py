@@ -56,6 +56,17 @@ def fit_circle_arc(x, y, imin: int = 0, imax: int = -1, invert: bool = False):
     return arc
 
 
+def fit_line(x, y, imin: int = 0, imax: int = -1):
+    """
+    """
+    x = x[imin:imax + 1]
+    y = y[imin:imax + 1]
+    f = lambda x, m, q: m * x + q
+    popt, pcov = curve_fit(f, x, y)
+    print(popt)
+    line = Line(Point(x[0], f(x[0], *popt)), Point(x[-1], f(x[-1], *popt)))
+    print(line)
+    return line
 
 """
 pts = np.vstack((x, y))
@@ -64,11 +75,5 @@ tck, u = splprep(pts, u=None, s=0.0)#, per=1)
 u_new = np.linspace(u.min(), u.max(), 1000)
 x_new, y_new = splev(u_new, tck, der=0)
 #plt.plot(x_new, y_new)
-
-def line(x, m, q):
-    return m * x + q
-
-def const(x, q):
-    return np.full(x.shape, q)
 
 """

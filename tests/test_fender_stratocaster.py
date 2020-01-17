@@ -80,10 +80,10 @@ class TestFenderStratocaster(unittest.TestCase):
         blueprint('Fender Stratocaster', 'A4')
         offset = Point(-80., 0.)
         head = FenderStratocaster()
-        #head.draw_construction(offset)
-        head.draw(offset)
+        head.contour.draw_construction(offset)
+        head.draw_top(offset)
         head.dimension_top(offset)
-        #head.draw_reference_points(offset)
+        head.contour.draw_reference_points(offset)
 
 
 

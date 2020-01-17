@@ -25,9 +25,9 @@ import os
 import numpy as np
 from scipy.optimize import curve_fit
 
-from metalute.fit import fit_circle_arc
+from metalute.fit import fit_circle_arc, fit_line
 from metalute.body import MusicManAxis as Body
-from metalute.head import MusicManContour as Head
+from metalute.head import MusicMan as Head
 from metalute.geometry import Point, Circle, CircularArc, Line
 from metalute.matplotlib_ import plt
 from metalute.blueprint import blueprint
@@ -113,8 +113,10 @@ class TestMusicManAxis(unittest.TestCase):
         #fit_circle_arc(self.xh, self.yh, 13, 20).draw(offset)
         #fit_circle_arc(self.xh, self.yh, 20, 24).draw(offset)
         #fit_circle_arc(self.xh, self.yh, 25, 29).draw(offset)
+        #fit_line(self.xh, self.yh, 7, 13).draw(offset, color='red')
+        #fit_line(self.xh, self.yh, -6, -3).draw(offset, color='red')
         head = Head()
-        head.draw(offset)
+        head.draw_top(offset)
 
     def test_head_draw(self):
         """
@@ -122,9 +124,9 @@ class TestMusicManAxis(unittest.TestCase):
         blueprint('Music Man Axis head', 'A4')
         offset = Point(-60., 0.)
         head = Head()
-        head.draw_construction(offset)
-        head.draw(offset)
-        head.draw_reference_points(offset)
+        head.contour.draw_construction(offset)
+        head.draw_top(offset)
+        head.contour.draw_reference_points(offset)
 
 
 
