@@ -20,7 +20,7 @@
 
 import numpy as np
 
-from metalute.geometry import SpiralArc, ParametricPolyPathBase
+from metalute.geometry import Line, SpiralArc, ParametricPolyPathBase
 
 
 class MusicManAxis(ParametricPolyPathBase):
@@ -56,8 +56,8 @@ class MusicManAxis(ParametricPolyPathBase):
                               span11 = 42.00,
                               r12 = 52.25,
                               span12 = 68.00,
-                              r13 = 180.00,
-                              span13  =  25.
+                              r13 = 179.15,
+                              span13  =  24.49
                               )
 
     @staticmethod
@@ -85,5 +85,17 @@ class MusicManAxis(ParametricPolyPathBase):
         arc10 = arc9.connecting_circular_arc(-self.r10, self.span10)
         arc11 = arc10.connecting_circular_arc(self.r11, self.span11)
         arc12 = arc11.connecting_circular_arc(-self.r12, self.span12)
+        p1 = arc12.end_point()
+        slope1 = arc12.end_slope()
+        print(p1, slope1)
+        #l1 = Line(p1, p1.move(40., slope1))
+
+        p2 = arc1.start_point()
+        slope2 = 180. + arc1.start_slope()
+        print(p2, slope2)
+        #l2 = Line(p2, p2.move(40., slope2))
+
+        #span = 218.81795816993235 - 8.408436584720818 - 180.
+        #arc13 = arc12.connecting_circular_arc(-140., span)
         arc13 = arc12.connecting_circular_arc(-self.r13, self.span13)
         return locals()
