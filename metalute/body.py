@@ -31,40 +31,40 @@ class MusicManAxis(ParametricPolyPathBase):
     -------
     The last circle arc is not exactly right, in that the first and last
     point do not connect. In principle the last two parameters should be
-    computable by imposing that the path closes correctly. 
+    computable by imposing that the path closes correctly.
     """
 
-    DEFAULT_PAR_DICT  =  dict(d1 = 240.00,
-                              m1 = 151.07,
-                              q1 = 89.54,
-                              scale1 = 120.97,
-                              gamma1 = 5.4759,
-                              start_phi1 = 240.,
-                              span1 = -140.,
-                              d2 = 25.00,
-                              r3 = 91.50,
-                              span3 = 55.00,
-                              r4 = 140.00,
-                              span4 = 20.00,
-                              r5 = 33.54,
-                              span5 = 148.00,
-                              r6 = 30.00,
-                              span6 = 99.00,
-                              r7 = 22.54,
-                              span7 = 110.00,
-                              r8 = 102.10,
-                              span8 = 27.00,
-                              r9 = 34.53,
-                              span9 = 165.00,
-                              r10 = 16.61,
-                              span10 = 150.,
-                              r11 = 65.83,
-                              span11 = 42.00,
-                              r12 = 52.25,
-                              span12 = 68.00,
-                              r13 = 179.15,
-                              span13  =  24.49
-                              )
+    DEFAULT_PAR_DICT =  {'d1': 240.00,
+                         'm1': 151.07,
+                         'q1': 89.54,
+                         'scale1': 120.97,
+                         'gamma1': 5.4759,
+                         'start_phi1': 240.,
+                         'span1': -140.,
+                         'd2': 25.00,
+                         'r3': 91.50,
+                         'span3': 55.00,
+                         'r4': 140.00,
+                         'span4': 20.00,
+                         'r5': 33.54,
+                         'span5': 148.00,
+                         'r6': 30.00,
+                         'span6': 99.00,
+                         'r7': 22.54,
+                         'span7': 110.00,
+                         'r8': 102.10,
+                         'span8': 27.00,
+                         'r9': 34.53,
+                         'span9': 165.00,
+                         'r10': 16.61,
+                         'span10': 150.,
+                         'r11': 65.83,
+                         'span11': 42.00,
+                         'r12': 52.25,
+                         'span12': 68.00,
+                         'r13': 179.15,
+                         'span13':  24.49
+                        }
 
     @staticmethod
     def big_radius(phi, m, q, scale, gamma):

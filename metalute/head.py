@@ -22,8 +22,55 @@ import numpy as np
 
 from metalute.units import inches_to_mm
 from metalute.matplotlib_ import plt
-from metalute.geometry import Point, PolyLine, CircularArc, Hole
+from metalute.geometry import Point, Line, PolyLine, CircularArc, Hole, ParametricPolyPathBase
 from metalute.dimension import dim, vdim
+
+
+class FenderStatocasterContour(ParametricPolyPathBase):
+
+    """Contour for the Fender Stratocaster headstock. 
+    """
+
+    DEFAULT_PAR_DICT = {'w': inches_to_mm(1.650),
+                        'd1': 8.06,
+                        'r1': 15.23,
+                        'span1': 70.0,
+                        'r2': 7.20,
+                        'span2': 87.0,
+                        'd2': 143.00,
+                        'r3': 25.50,
+                        'span3': 233.0,
+                        'r4': 8.45,
+                        'span4': 77.5,
+                        'r5': 280.40,
+                        'span5': 8.0,
+                        'r6': 169.60,
+                        'span6': 13.2,
+                        'r7': 50.50
+                        }
+
+    def construct(self):
+        """Overloaded method.
+        """
+        p1 = self.anchor.vmove(0.5 * self.w)
+        p2 = p1.hmove(self.d1)
+        line1 = Line(p1, p2)
+        arc1 = line1.connecting_circular_arc(self.r1, self.span1)
+        arc2 = arc1.connecting_circular_arc(-self.r2, self.span2)
+        line2 = arc2.connecting_line(self.d2)
+        arc3 = line2.connecting_circular_arc(-self.r3, -self.span3)
+        arc4 = arc3.connecting_circular_arc(self.r4, -self.span4)
+        arc5 = arc4.connecting_circular_arc(self.r5, self.span5)
+        arc6 = arc5.connecting_circular_arc(-self.r6, self.span6)
+        # Last circle---here things are a little bit tricky :-)
+        p = arc6.end_point()
+        phi = np.degrees(np.arccos(1. - (-0.5 * self.w - p.y) / self.r7))
+        dx = self.r7 * np.sin(np.radians(phi))
+        c7 = Point(p.x - dx, -0.5 * self.w - self.r7)
+        arc7 = CircularArc(c7, self.r7, 90. - phi, phi)
+        line3 = arc7.connecting_line(arc7.end_point().x)
+        return locals()
+
 
 
 class Headstock:

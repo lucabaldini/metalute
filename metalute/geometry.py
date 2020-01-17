@@ -245,22 +245,6 @@ class PolyLine(Path):
         """
         return self.points
 
-    def connecting_circular_arc(self, radius, span, name=None):
-        """Return the circular arc that connects to the end point of the line in
-        such a way that the combined path is differentiable all the way through.
-
-        Parameters
-        ---------
-        radius : float
-            The radius of the connecting arc (can be negative).
-
-        span : float
-            The measure of the connecting arc.
-        """
-        slope = self.slope()
-        center = self.end_point().move(radius, slope + 90.)
-        return CircularArc(center, radius, slope - 90., span)
-
     def draw(self, offset, **kwargs):
         """Draw method.
         """
@@ -308,6 +292,22 @@ class Line(PolyLine):
         """
         dx, dy = (self.end_point() - self.start_point()).xy()
         return np.degrees(np.arctan2(dy, dx))
+
+    def connecting_circular_arc(self, radius, span, name=None):
+        """Return the circular arc that connects to the end point of the line in
+        such a way that the combined path is differentiable all the way through.
+
+        Parameters
+        ---------
+        radius : float
+            The radius of the connecting arc (can be negative).
+
+        span : float
+            The measure of the connecting arc.
+        """
+        slope = self.slope()
+        center = self.end_point().move(radius, slope + 90.)
+        return CircularArc(center, radius, slope - 90., span)
 
     def text_info(self) -> str:
         """Overloaded method.

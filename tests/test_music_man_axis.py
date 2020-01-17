@@ -39,7 +39,7 @@ if sys.flags.interactive:
 
 
 
-class TestHead(unittest.TestCase):
+class TestMusicManAxis(unittest.TestCase):
 
     """Unit tests for the head module.
     """
