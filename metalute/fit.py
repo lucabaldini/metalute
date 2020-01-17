@@ -61,6 +61,7 @@ def fit_line(x, y, imin: int = 0, imax: int = -1):
     """
     x = x[imin:imax + 1]
     y = y[imin:imax + 1]
+    print(x, y)
     f = lambda x, m, q: m * x + q
     popt, pcov = curve_fit(f, x, y)
     print(popt)

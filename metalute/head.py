@@ -155,8 +155,7 @@ class FenderStratocaster(HeadstockBase):
         pitch = string_pitch * scale
         delta = (pivot.y + g_string_offset) * scale - 3. * pitch
         for i in range(6):
-            p = pivot.move(i * pitch + delta, slope)
-            self.add_hole(p)
+            self.add_hole(pivot.move(i * pitch + delta, slope))
 
     def dimension_top(self, offset):
         """
@@ -233,7 +232,7 @@ class MusicMan(HeadstockBase):
         """
         hole_distance_to_edge = 12.634
         string_pitch = 6.7
-        g_string_offset = -1.55
+        g_string_offset = -1.45
         slope = self.contour.path('line3').slope()
         arc = self.contour.path('arc2')
         pivot = arc.end_point().move(hole_distance_to_edge, arc.end_phi)
@@ -241,5 +240,7 @@ class MusicMan(HeadstockBase):
         pitch = string_pitch * scale
         delta = (pivot.y + g_string_offset) * scale - 3. * pitch
         for i in range(4):
-            p = pivot.move(i * pitch + delta, slope)
-            self.add_hole(p)
+            self.add_hole(pivot.move(i * pitch + delta, slope))
+        # This is horrible, as the last points are added by hand.
+        self.add_hole(Point(76.75, -13.35))
+        self.add_hole(Point(52.05, -20.02))

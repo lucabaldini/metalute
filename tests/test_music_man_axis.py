@@ -104,17 +104,22 @@ class TestMusicManAxis(unittest.TestCase):
         body.draw(offset)
         body.draw_reference_points(offset)
 
+    def fit_head(self):
+        """
+        """
+        #fit_circle_arc(self.xh, self.yh, 13, 20).draw(offset)
+        #fit_circle_arc(self.xh, self.yh, 20, 24).draw(offset)
+        #fit_circle_arc(self.xh, self.yh, 25, 29).draw(offset)
+        #fit_line(self.xh, self.yh, 7, 13).draw(offset, color='red')
+        #fit_line(self.xh, self.yh, -6, -3).draw(offset, color='red')
+        #fit_line(self.xh, self.yh, -2, len(self.xh)).draw(offset, color='red')
+
     def test_head_accuracy(self):
         """
         """
         blueprint('Music Man Axis head accuracy', 'A4')
         offset = Point(-60., 0.)
         plt.plot(self.xh + offset.x, self.yh + offset.y, 'o')
-        #fit_circle_arc(self.xh, self.yh, 13, 20).draw(offset)
-        #fit_circle_arc(self.xh, self.yh, 20, 24).draw(offset)
-        #fit_circle_arc(self.xh, self.yh, 25, 29).draw(offset)
-        #fit_line(self.xh, self.yh, 7, 13).draw(offset, color='red')
-        #fit_line(self.xh, self.yh, -6, -3).draw(offset, color='red')
         head = Head()
         head.draw_top(offset)
 
