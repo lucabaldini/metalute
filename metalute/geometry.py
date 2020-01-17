@@ -659,6 +659,11 @@ class ParametricPolyPathBase(Path):
         """
         raise NotImplementedError
 
+    def path(self, name):
+        """
+        """
+        return self.path_dict[name]
+
     def add_path(self, path):
         """Add a path to the complex shape.
 

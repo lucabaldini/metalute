@@ -82,6 +82,7 @@ class TestFenderStratocaster(unittest.TestCase):
         head = FenderStratocaster()
         #head.draw_construction(offset)
         head.draw(offset)
+        head.dimension_top(offset)
         #head.draw_reference_points(offset)
 
 
