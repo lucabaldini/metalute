@@ -43,43 +43,63 @@ class TestMusicManAxis(unittest.TestCase):
     """Unit tests for the head module.
     """
 
-    def load_data(self):
+    @classmethod
+    def setUpClass(cls):
+        """Load the necessary data.
         """
+        cls.xb, cls.yb, cls.xh, cls.yh = cls._load_data()
+
+    @staticmethod
+    def _load_data():
+        """Load the input data.
         """
+        # Read the input file with the body data.
         file_path = os.path.join(TEST_DATA_FOLDER, 'music_man_axis_body.txt')
         x, y = np.loadtxt(file_path, unpack=True, delimiter=',')
+
+        # The conversion factors to physical units are taken by imposing that
+        # the scale length of the guitar on the original image is the nominal one.
         scale = (993.8586723768738 - 174.64239828693792) / 648.
         xoffset = x[0]
         yoffset = y[0]
 
         def to_physical_coordinates(x, y):
-            """
+            """Small convenience function to covert from pixels to physical units.
             """
             return (x - xoffset) / scale, -(y - yoffset) / scale
 
-        x, y = to_physical_coordinates(x, y)
-        return x, y
+        # Body coordinates.
+        xb, yb = to_physical_coordinates(x, y)
 
-    def test_accuracy(self):
+        # And now off to the headstock.
+        file_path = os.path.join(TEST_DATA_FOLDER, 'music_man_axis_headstock.txt')
+        x, y = np.loadtxt(file_path, unpack=True, delimiter=',')
+        xh, yh = to_physical_coordinates(x, y)
+        return xb, yb, xh, yh
+
+    def fit_body(self):
+        """
+        """
+        fit_circle_arc(self.xb, self.yb, 13, 16).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 18, 22, invert=True).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 23, 26).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 26, 29, invert=True).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 29, 33, invert=True).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 33, 37).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 38, 42, invert=True).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 42, 44, invert=True).draw(offset)
+        fit_circle_arc(self.xb, self.yb, 44, 47).draw(offset)
+
+    def test_body_accuracy(self):
         """
         """
         blueprint('Music Man Axis accuracy', 'A1')
         offset = Point(-200., -50.)
-        x, y = self.load_data()
-        plt.plot(x + offset.x, y + offset.y, 'o')
+        plt.plot(self.xb + offset.x, self.yb + offset.y, 'o')
         body = MusicManAxis()
         body.draw(offset)
-        #fit_circle_arc(x, y, 13, 16).draw(offset)
-        #fit_circle_arc(x, y, 18, 22, invert=True).draw(offset)
-        #fit_circle_arc(x, y, 23, 26).draw(offset)
-        #fit_circle_arc(x, y, 26, 29, invert=True).draw(offset)
-        #fit_circle_arc(x, y, 29, 33, invert=True).draw(offset)
-        #fit_circle_arc(x, y, 33, 37).draw(offset)
-        #fit_circle_arc(x, y, 38, 42, invert=True).draw(offset)
-        #fit_circle_arc(x, y, 42, 44, invert=True).draw(offset)
-        #fit_circle_arc(x, y, 44, 47).draw(offset)
 
-    def test_draw(self):
+    def test_body_draw(self):
         """
         """
         blueprint('Music Man Axis', 'A1')
@@ -88,6 +108,7 @@ class TestMusicManAxis(unittest.TestCase):
         body.draw_construction(offset)
         body.draw(offset)
         body.draw_reference_points(offset)
+
 
 
 if __name__ == '__main__':
