@@ -26,7 +26,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 from metalute.fit import fit_circle_arc
-from metalute.body import MusicManAxis
+from metalute.body import MusicManAxis as Body
+from metalute.head import MusicManContour as Head
 from metalute.geometry import Point, Circle, CircularArc, Line
 from metalute.matplotlib_ import plt
 from metalute.blueprint import blueprint
@@ -56,25 +57,19 @@ class TestMusicManAxis(unittest.TestCase):
         # Read the input file with the body data.
         file_path = os.path.join(TEST_DATA_FOLDER, 'music_man_axis_body.txt')
         x, y = np.loadtxt(file_path, unpack=True, delimiter=',')
-
-        # The conversion factors to physical units are taken by imposing that
+        # The conversion factor to physical units are taken by imposing that
         # the scale length of the guitar on the original image is the nominal one.
         scale = (993.8586723768738 - 174.64239828693792) / 648.
+        # Body coordinates.
         xoffset = x[0]
         yoffset = y[0]
-
-        def to_physical_coordinates(x, y):
-            """Small convenience function to covert from pixels to physical units.
-            """
-            return (x - xoffset) / scale, -(y - yoffset) / scale
-
-        # Body coordinates.
-        xb, yb = to_physical_coordinates(x, y)
-
+        xb, yb = (x - x[0]) / scale, -(y - y[0]) / scale
         # And now off to the headstock.
         file_path = os.path.join(TEST_DATA_FOLDER, 'music_man_axis_headstock.txt')
         x, y = np.loadtxt(file_path, unpack=True, delimiter=',')
-        xh, yh = to_physical_coordinates(x, y)
+        # Mind we take the seventh to last point here because it represents the
+        # anchor, and the following 6 ones are the holes.
+        xh, yh = (x - x[-7]) / scale, -(y - y[-7]) / scale
         return xb, yb, xh, yh
 
     def fit_body(self):
@@ -90,24 +85,46 @@ class TestMusicManAxis(unittest.TestCase):
         fit_circle_arc(self.xb, self.yb, 42, 44, invert=True).draw(offset)
         fit_circle_arc(self.xb, self.yb, 44, 47).draw(offset)
 
-    def test_body_accuracy(self):
+    def _test_body_accuracy(self):
         """
         """
-        blueprint('Music Man Axis accuracy', 'A1')
+        blueprint('Music Man Axis body accuracy', 'A1')
         offset = Point(-200., -50.)
         plt.plot(self.xb + offset.x, self.yb + offset.y, 'o')
-        body = MusicManAxis()
+        body = Body()
         body.draw(offset)
 
-    def test_body_draw(self):
+    def _test_body_draw(self):
         """
         """
         blueprint('Music Man Axis', 'A1')
         offset = Point(-200., -50.)
-        body = MusicManAxis()
+        body = Body()
         body.draw_construction(offset)
         body.draw(offset)
         body.draw_reference_points(offset)
+
+    def test_head_accuracy(self):
+        """
+        """
+        blueprint('Music Man Axis head accuracy', 'A4')
+        offset = Point(-60., 0.)
+        plt.plot(self.xh + offset.x, self.yh + offset.y, 'o')
+        #fit_circle_arc(self.xh, self.yh, 13, 20).draw(offset)
+        #fit_circle_arc(self.xh, self.yh, 20, 24).draw(offset)
+        #fit_circle_arc(self.xh, self.yh, 25, 29).draw(offset)
+        head = Head()
+        head.draw(offset)
+
+    def test_head_draw(self):
+        """
+        """
+        blueprint('Music Man Axis head', 'A4')
+        offset = Point(-60., 0.)
+        head = Head()
+        head.draw_construction(offset)
+        head.draw(offset)
+        head.draw_reference_points(offset)
 
 
 

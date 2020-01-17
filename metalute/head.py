@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 Luca Baldini (luca.baldini@pi.infn.it)
+# Copyright (C) 2019--2020 Luca Baldini (luca.baldini@pi.infn.it)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class FenderStratocasterContour(ParametricPolyPathBase):
 
 class FenderStratocaster:
 
-    """
+    """The actual Fender Stratocaster headstock.
     """
 
     def __init__(self, **kwargs):
@@ -109,3 +109,55 @@ class FenderStratocaster:
         #vdim(self.hole(5).center, self.hole(4).center, offset, distance=30.)
         #vdim(self.point('p4'), self.point('p9'), offset)
         pass
+
+
+
+class MusicManContour(ParametricPolyPathBase):
+
+    """Contour for the typical Music Man headstock.
+    """
+
+    DEFAULT_PAR_DICT = {'w': 41.30,
+                        'd1': 4.00,
+                        'r1': 15.00,
+                        'span1': 50.00,
+                        'd2': 13.00,
+                        'r2': 5.00,
+                        'span2': 65.25,
+                        'd3': 98.50,
+                        'r3': 23.00,
+                        'span3': 173.00,
+                        'r4': 20.14,
+                        'phi4': -157.,
+                        'span4': 86.00,
+                        'd4': 20.,
+                        'r5': 280.00,
+                        'span5': 6.80,
+                        'r6': 4.00,
+                        'span6': 58.00,
+                        'd5': 10.00
+                        }
+
+    def construct(self):
+        """Overloaded method.
+        """
+        p1 = self.anchor.vmove(0.5 * self.w)
+        p2 = p1.hmove(self.d1)
+        line1 = Line(p1, p2)
+        arc1 = line1.connecting_circular_arc(self.r1, self.span1)
+        line2 = arc1.connecting_line(self.d2)
+        arc2 = line2.connecting_circular_arc(-self.r2, -self.span2)
+        line3 = arc2.connecting_line(-self.d3)
+        arc3 = line3.connecting_circular_arc(-self.r3, -self.span3)
+        c4 = arc3.end_point().move(self.r4, self.phi4)
+        arc4 = CircularArc(c4, self.r4, self.phi4 + 180., self.span4)
+        line4 = arc4.connecting_line(self.d4)
+        arc5 = line4.connecting_circular_arc(-self.r5, -self.span5)
+        arc6 = arc5.connecting_circular_arc(-self.r6, -self.span6)
+        line5 = arc6.connecting_line(self.d5)
+        # Close the loop---again, a but tricky.
+        span = 180. - line5.slope()
+        r = (-0.5 * self.w - line5.end_point().y) / (1. - np.cos(np.radians(span)))
+        arc7 = line5.connecting_circular_arc(r, span)
+        line6 = arc7.connecting_line(arc7.end_point().x)
+        return locals()

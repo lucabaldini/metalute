@@ -51,7 +51,7 @@ def fit_circle_arc(x, y, imin: int = 0, imax: int = -1, invert: bool = False):
     phi2 = Line(center, Point(x[-1], y[-1])).slope()
     if invert:
         phi1, phi2 = phi2, phi1
-    arc = CircularArc(center, radius, phi1, phi2)
+    arc = CircularArc(center, radius, phi1, phi2 - phi1)
     print(arc)
     return arc
 
