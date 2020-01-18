@@ -46,8 +46,10 @@ class TestBliss(unittest.TestCase):
         head.draw_construction(offset)
         head.draw(offset)
         head.draw_reference_points(offset)
-
         MusicManContour().draw(offset, color='lightgray')
+        blueprint('Bliss simplified', 'A4')
+        head.draw(offset)
+
 
 
 if __name__ == '__main__':
