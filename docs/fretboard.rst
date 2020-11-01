@@ -1,12 +1,11 @@
-Design principles
-=================
+The fretboard
+=============
 
-The scale length and the string spacing are two of the figures that it makes
-sense start the design of a guitar from.
-The scale length determines the length and the detailed layout of the freatboard
-(and therefore the design of the neck), while the string spacing determines
-the placement of the bridge on the guitar body as well as the design of the
-headstock and the pickup choice.
+The scale length and the string spacing are the two basic figures defining the
+fretboard. The scale length determines the length and the detailed layout of the
+freatboard (and therefore the design of the neck), as well as the placement of
+the bridge on the guitar body, while the string spacing determines
+the design of the headstock and the pickup choice.
 
 
 Scale length
@@ -20,11 +19,11 @@ string can produce at a given tension. It's also called string length.
 the nut and the 12th fret.)
 
 The scale length of an electric guitar affects both its playability and its tone.
-Regarding playability, a shorter scale length allows more compact fingering and
-favors shorter fingers and hand-span. A longer scale allows more expanded finger
-and favors longer fingers and hand-span. With regard to tone, a longer scale
-favors "brightness" or cleaner overtones and more separated harmonics versus a
-shorter scale scale length), which favors "warmth" or more muddy overtones.
+A shorter scale length allows more compact fingering and favors shorter fingers
+and hand-span. A longer scale allows more expanded finger and favors longer
+fingers and hand-span. On the other hand, a longer scale favors "brightness" or
+cleaner overtones and more separated harmonics versus a shorter scale scale
+length, which favors "warmth" or more muddy overtones.
 
 Practical scale lengths range from 19.4 in (492 mm) to 30 in (762 mm), with
 the "standard" Fender Stratocaster sitting at 25.5 in (648 mm).
@@ -37,18 +36,21 @@ the "standard" Fender Stratocaster sitting at 25.5 in (648 mm).
    * - Model
      - Scale length
    * - Red special
-     - 610 mm
+     - 610 mm (24 in)
    * - Fender Jaguar/Mustang
-     - 610 mm
+     - 610 mm (24 in)
    * - Gibson Les Paul and SG
-     - 628 mm
+     - 629 mm (24.75 in)
    * - Paul Red Smith
-     - 635 mm
+     - 635 mm (25 in)
    * - Fender Stratocaster
-     - 648 mm
+     - 648 mm (25.5 in)
    * - Ibanez
-     - 648 mm
+     - 648 mm (25.5 in)
 
+
+Fret positioning
+----------------
 
 String spread
 -------------

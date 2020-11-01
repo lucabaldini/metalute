@@ -21,6 +21,9 @@
 # Definition of an inch, see https://en.wikipedia.org/wiki/Inch
 MM_PER_INCHES = 25.4
 
+# Conversion between pounds and Newton
+NEWTON_PER_POUND = 4.44822
+
 
 def inches_to_mm(inches: float) -> float:
     """Convert inches to mm.
@@ -32,3 +35,15 @@ def mm_to_inches(mm: float) -> float:
     """Convert mm to inches.
     """
     return mm / MM_PER_INCHES
+
+
+def pounds_to_newton(pounds: float) -> float:
+    """Convert pounds to Newton.
+    """
+    return pounds * NEWTON_PER_POUND
+
+
+def newton_to_pounds(newton: float) -> float:
+    """Convert Newton to pounds.
+    """
+    return newton / NEWTON_PER_POUND
