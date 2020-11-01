@@ -1,4 +1,4 @@
-.. list-table:: Light gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length.
+.. list-table:: Light gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length (total tension 419.57 N, or 94.32 lb).
 
    * - Note
      - Diameter [in]

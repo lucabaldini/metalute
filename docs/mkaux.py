@@ -24,6 +24,7 @@ from metalute import METALUTE_DOCS_TABLES
 from metalute.sphinx_ import write_list_table
 from metalute.gauge import StandardStringGauges
 from metalute.pitch import GUITAR_STANDARD_TUNING
+from metalute.units import newton_to_pounds
 
 
 def write_gauge_tables(scale_length=648.):
@@ -41,7 +42,10 @@ def write_gauge_tables(scale_length=648.):
         df = gauge.data_frame(scale_length, tuning)
         file_path = os.path.join(METALUTE_DOCS_TABLES, f'gauge_{gauge.name}.rst')
         file_path = file_path.replace(' ', '_').lower()
-        caption = f'{gauge.name} gauge, with {tuning} tuning, for a {scale_length} mm scale length.'
+        tension = gauge.total_tension(scale_length, tuning)
+        caption = f'{gauge.name} gauge, with {tuning} tuning, for a '\
+                  f'{scale_length} mm scale length (total tension {tension:.2f} N, '\
+                  f'or {newton_to_pounds(tension):.2f} lb).'
         write_list_table(file_path, df, caption)
 
 

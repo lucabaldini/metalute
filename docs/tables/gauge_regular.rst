@@ -1,4 +1,4 @@
-.. list-table:: Regular gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length.
+.. list-table:: Regular gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length (total tension 513.75 N, or 115.50 lb).
 
    * - Note
      - Diameter [in]

@@ -76,6 +76,11 @@ class StringGauge:
         """
         return string_tension(scale_length, self.diameters, tuning.frequencies)
 
+    def total_tension(self, scale_length, tuning=GUITAR_STANDARD_TUNING):
+        """Return the total tension for the gauge.
+        """
+        return self.tensions(scale_length, tuning).sum()
+
     def data_frame(self, scale_length, tuning=GUITAR_STANDARD_TUNING):
         """Return a pandas data frame with all the relevant info.
         """
