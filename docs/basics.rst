@@ -60,31 +60,27 @@ its tension and the linear mass density
 
 is sufficient for our purposes.
 
+More commonly, we'd like to express the tension of the string as a function of
+the other parameters:
 
-String Gauges
--------------
+.. math::
+  \tau = 4 \ell^2 \nu^2 \mu.
 
-String gauges are identified as a series of (typically 6) numbers, expressing
-the thickness of each string (in inches). A light, .009"--.046" gauge, for
-instance, features a 0.009 in thick high E and a 0.046 in thick low E, as
-illustrated in the following table.
+Now, the linear density of a homogeneous string with a circular cross section
+with diameter d can be written as
 
-.. list-table:: Typical string gauge
-   :widths: 50 50
-   :align: center
-   :header-rows: 1
+.. math::
+  \mu = \varrho \pi \frac{d^2}{4}
 
-   * - String
-     - Thickness
-   * - High E (E4)
-     - 0.009 in (0.229 mm)
-   * - B (B3)
-     - 0.011 in (0.279 mm)
-   * - G (G3)
-     - 0.016 in (0.406 mm)
-   * - D (D3)
-     - 0.026 in (0.660 mm)
-   * - A (A2)
-     - 0.036 in (0.914 mm)
-   * - Low E (E2)
-     - 0.046 in (1.168 mm)
+and, therefore, the tension reads
+
+.. math::
+  \tau = \pi \varrho (\ell d \nu)^2.
+
+It goes without saying that the homogeneous-string approximation breaks down
+badly for wounded strings, but since most strings (coating aside) are made
+of stainless steel (or, at least, the core is) one can fold the density of the
+still into the equation to get useful effective formulas for quick calculations
+
+.. math::
+  \tau~\text{[N]} = 1.591 \times 10^{-5} (\ell~\text{[mm]} d~\text{[in]} \nu~\text{[Hz]})^2

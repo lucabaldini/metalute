@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2019 Luca Baldini (luca.baldini@pi.infn.it)
+# Copyright (C) 2020 Luca Baldini (luca.baldini@pi.infn.it)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,10 +18,12 @@
 """Pitch-related facilities.
 """
 
+import numpy
+
 A4_FREQ = 440.
 
 
-class ScientificPitchNotation:
+class PitchNotation:
 
     """Implementation of the scientific pitch notattion, see
     https://en.wikipedia.org/wiki/Scientific_pitch_notation
@@ -55,9 +57,34 @@ class ScientificPitchNotation:
         return A4_FREQ * 2.**((note - 69.) / 12.)
 
 
+
+class GuitarTuning:
+
+    """Class describing a guitar tuning.
+    """
+
+    def __init__(self, *notes):
+        """Constructor.
+        """
+        self.notes = notes
+        self.frequencies = numpy.array([PitchNotation.frequency(note) for note in self.notes])
+
+    def __str__(self):
+        """String formatting.
+        """
+        return '-'.join(self.notes)
+
+
+GUITAR_STANDARD_TUNING = GuitarTuning('E4', 'B3', 'G3', 'D3', 'A2', 'E2')
+
+
+
+
 if __name__ == '__main__':
-    print(ScientificPitchNotation.note_number('A4'))
-    print(ScientificPitchNotation.frequency('A4'))
-    print(ScientificPitchNotation.frequency(69))
-    print(ScientificPitchNotation.frequency(69.5))
-    print(ScientificPitchNotation.frequency(70.))
+    print(PitchNotation.note_number('A4'))
+    print(PitchNotation.frequency('A4'))
+    print(PitchNotation.frequency(69))
+    print(PitchNotation.frequency(69.5))
+    print(PitchNotation.frequency(70.))
+    print(GUITAR_STANDARD_TUNING)
+    print(GUITAR_STANDARD_TUNING.frequencies)

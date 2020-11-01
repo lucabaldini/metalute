@@ -38,3 +38,6 @@ def _join(*args) -> str:
 ROOT_FOLDER = _join('metalute')
 TEST_FOLDER = _join('tests')
 TEST_DATA_FOLDER = os.path.join(TEST_FOLDER, 'data')
+METALUTE_DOCS = _join('docs')
+METALUTE_DOCS_FIGURES = os.path.join(METALUTE_DOCS, 'figures')
+METALUTE_DOCS_TABLES = os.path.join(METALUTE_DOCS, 'tables')

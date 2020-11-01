@@ -11,6 +11,7 @@ MetaLute
    :caption: Contents:
 
    basics
+   gauges
    fretboard
    units
 
