@@ -83,11 +83,21 @@ pygments_style = None
 #
 html_theme = 'alabaster'
 
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
+html_theme = 'alabaster'
+
+html_theme_options = {
+    'logo': 'metalute_logo.png',
+    'body_text_align': 'justify',
+    #'description': 'GPD workbook version {}'.format(__version__),
+    'page_width': '1280px',
+    'sidebar_width': '280px',
+    'font_size': 'medium',
+    'caption_font_size': 'medium',
+    'warn_bg': '#fff59d',
+    'note_bg': '#c8e6c9',
+    'note_border': '#1b5e20',
+    #'show_relbars': 'true'
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
