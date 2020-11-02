@@ -21,7 +21,7 @@
 import os
 import sys
 
-from metalute import METALUTE_DOCS_TABLES, METALUTE_DOCS_FIGURES
+from metalute import METALUTE_DOCS_TABLES, METALUTE_DOCS
 from metalute.sphinx_ import write_list_table
 from metalute.gauge import StandardStringGauges
 from metalute.pitch import GUITAR_STANDARD_TUNING
@@ -79,7 +79,7 @@ def write_logo(width=450., height=350, dpi=100, text_size=3., line_width=2.5, ma
     plt.text(-75., 40., 'M', **kwargs, size=450)
     plt.text(20., 18., 'eta', **kwargs, size=150, color='orange')
     plt.text(-51., -50., 'L', **kwargs, size=450)
-    plt.text(-8., -62., 'ute', **kwargs, size=150, color='orange')
+    plt.text(-8., -55., 'ute', **kwargs, size=150, color='orange')
     plt.tight_layout(pad=-1.)
     file_path = os.path.join(METALUTE_DOCS, '_static', 'metalute_logo.png')
     plt.savefig(file_path)
