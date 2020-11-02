@@ -1,4 +1,4 @@
-.. list-table:: Extra super light gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length (total tension 346.73 N, or 77.95 lb).
+.. list-table:: Summary table for a *Extra super light* gauge (0.008--0.038), with a standard E4-B3-G3-D3-A2-E2 tuning, assuming a 648.0 mm scale length (total tension 346.73 N, or 77.95 lb).
 
    * - Note
      - Diameter [in]

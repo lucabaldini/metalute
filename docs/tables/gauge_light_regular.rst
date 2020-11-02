@@ -1,4 +1,4 @@
-.. list-table:: Light regular gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length (total tension 471.94 N, or 106.10 lb).
+.. list-table:: Summary table for a *Light regular* gauge (0.009--0.046), with a standard E4-B3-G3-D3-A2-E2 tuning, assuming a 648.0 mm scale length (total tension 471.94 N, or 106.10 lb).
 
    * - Note
      - Diameter [in]

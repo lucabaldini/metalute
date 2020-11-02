@@ -43,9 +43,9 @@ def write_gauge_tables(scale_length=648.):
         file_path = os.path.join(METALUTE_DOCS_TABLES, f'gauge_{gauge.name}.rst')
         file_path = file_path.replace(' ', '_').lower()
         tension = gauge.total_tension(scale_length, tuning)
-        caption = f'{gauge.name} gauge, with {tuning} tuning, for a '\
-                  f'{scale_length} mm scale length (total tension {tension:.2f} N, '\
-                  f'or {newton_to_pounds(tension):.2f} lb).'
+        caption = f'Summary table for a *{gauge.name}* gauge ({gauge.label()}), '\
+                  f'with a standard {tuning} tuning, assuming a {scale_length} mm scale '\
+                  f'length (total tension {tension:.2f} N, or {newton_to_pounds(tension):.2f} lb).'
         write_list_table(file_path, df, caption)
 
 

@@ -1,4 +1,4 @@
-.. list-table:: Medium gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length (total tension 589.43 N, or 132.51 lb).
+.. list-table:: Summary table for a *Medium* gauge (0.011--0.049), with a standard E4-B3-G3-D3-A2-E2 tuning, assuming a 648.0 mm scale length (total tension 589.43 N, or 132.51 lb).
 
    * - Note
      - Diameter [in]

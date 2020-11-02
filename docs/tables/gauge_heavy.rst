@@ -1,4 +1,4 @@
-.. list-table:: Heavy gauge, with E4-B3-G3-D3-A2-E2 tuning, for a 648.0 mm scale length (total tension 769.43 N, or 172.98 lb).
+.. list-table:: Summary table for a *Heavy* gauge (0.012--0.052), with a standard E4-B3-G3-D3-A2-E2 tuning, assuming a 648.0 mm scale length (total tension 769.43 N, or 172.98 lb).
 
    * - Note
      - Diameter [in]

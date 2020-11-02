@@ -71,6 +71,11 @@ class StringGauge:
         self.name = name
         self.diameters = numpy.array(diameters, dtype=float)
 
+    def label(self):
+        """Return a text label for the gauge.
+        """
+        return f'{self.diameters.min():.3f}--{self.diameters.max():.3f}'
+
     def tensions(self, scale_length, tuning=GUITAR_STANDARD_TUNING):
         """Return the tensions of the strings in N.
         """
