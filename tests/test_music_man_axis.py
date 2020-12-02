@@ -30,7 +30,7 @@ from metalute.body import MusicManAxis as Body
 from metalute.head import MusicMan as Head
 from metalute.geometry import Point, Circle, CircularArc, Line
 from metalute.matplotlib_ import plt
-from metalute.blueprint import blueprint
+from metalute.blueprint import blueprint, hruler
 from metalute.geometry import Point
 from metalute.units import inches_to_mm
 from metalute import TEST_DATA_FOLDER
@@ -103,6 +103,30 @@ class TestMusicManAxis(unittest.TestCase):
         body.draw_construction(offset)
         body.draw(offset)
         body.draw_reference_points(offset)
+
+    def test_body_draw_split(self):
+        """
+        """
+        x0 = 200.
+        y0 = 0.
+        blueprint('Music Man Axis 1', 'A3', orientation='Portrait')
+        offset = Point(-100., 15.)
+        plt.hlines(y0, -1000., 1000.)
+        plt.vlines(x0 + offset.x, -1000., 1000.)
+        body = Body()
+        body.draw_construction(offset)
+        body.draw(offset)
+        body.draw_reference_points(offset)
+        plt.savefig('axis1.pdf')
+        blueprint('Music Man Axis 2', 'A3', orientation='Portrait')
+        offset = Point(-300., 15.)
+        plt.hlines(y0, -1000., 1000.)
+        plt.vlines(x0 + offset.x, -1000., 1000.)
+        body = Body()
+        body.draw_construction(offset)
+        body.draw(offset)
+        body.draw_reference_points(offset)
+        plt.savefig('axis2.pdf')
 
     def fit_head(self):
         """
