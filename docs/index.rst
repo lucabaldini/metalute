@@ -32,6 +32,7 @@ to get in touch with me you can drop me a line at
    basics
    gauges
    fretboard
+   curves   
    units
 
 

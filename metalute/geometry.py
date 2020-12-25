@@ -255,6 +255,22 @@ class PolyLine(Path):
 
 
 
+class Rectangle(PolyLine):
+
+    """
+    """
+
+    def __init__(self, center, width, height, name: str = None):
+        """Constructor.
+        """
+        p1 = center + Point(0.5 * width, 0.5 * height)
+        p2 = p1.move(height, -90.)
+        p3 = p2.move(width, 180.)
+        p4 = p3.move(height, 90.)
+        super().__init__(p1, p2, p3, p4, p1, name=name)
+
+
+
 class Line(PolyLine):
 
     """Class representing a straight line.

@@ -23,7 +23,7 @@ from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
 
-from metalute.geometry import hdim
+from metalute.dimension import dim
 
 
 @dataclass
@@ -119,10 +119,11 @@ class Fretboard:
         """
         pass
 
-    def draw_top_shape(self, position, axis: bool = True,
-                       dimensioning: bool = True, **kwargs):
+    def draw_top_shape(self, position, axis: bool = False,
+                       dimensioning: bool = False, **kwargs):
         """
         """
+        kwargs.setdefault('color', 'black')
         x0, y0 = position
         l = self.total_length()
         w1 = 0.5 * self.width_at_nut
@@ -151,6 +152,14 @@ class Fretboard:
                 plt.text(_x, _y, '{}'.format(i + 1), **fmt)
                 circle = plt.Circle((_x, _y), radius=4., fill=False)
                 plt.gca().add_patch(circle)
+
+    def draw_bridge_reference(self, position):
+        """
+        """
+        x0, y0 = position
+        x = x0 - self.scale_length
+        y = 80.
+        plt.vlines(x, -y, y)
 
     def draw(self, position=(0., 0)):
         """
