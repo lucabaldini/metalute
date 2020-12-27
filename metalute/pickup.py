@@ -67,7 +67,7 @@ class SingleCoilRouting(ParametricPolyPathBase):
 
     DEFAULT_PAR_DICT = {'w': 20.,
                         'h': 88.,
-                        'r': 8.
+                        'r': 9.999999999999
                         }
 
     def construct(self):
