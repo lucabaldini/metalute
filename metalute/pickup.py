@@ -93,10 +93,10 @@ class SingleCoilBase(PickupBase):
         if self.outer_length != self.inner_length:
             w = 0.5 * self.inner_width - 0.25 * self.inner_length
             d = 6.
-            p1 = Point(0.5 * self.inner_length, w)
-            p2 = Point(p1.x + self.outer_length - self.inner_length, d)
+            p1 = Point(-0.5 * self.inner_length, w)
+            p2 = Point(p1.x - self.outer_length + self.inner_length, d)
             p3 = p2.vmove(-2. * d)
-            p4 = Point(0.5 * self.inner_length, -w)
+            p4 = Point(-0.5 * self.inner_length, -w)
             Line(p1, p2).draw(offset)
             Line(p2, p3).draw(offset)
             Line(p3, p4).draw(offset)
@@ -201,10 +201,10 @@ class HumbuckerEMG(HumbuckerBase):
     inner_length : float = 38.1
     inner_width : float = 69.8
     outer_length : float = inner_length
-    outer_width : float = 83.0
-    string_spacing : float = inches_to_mm(0.383)
+    outer_width : float = 83.0 # TBC
+    string_spacing : float = inches_to_mm(0.383) # TBC
     screw_spacing : float = 78.5
-    wing_length : float = inches_to_mm(0.500)
+    wing_length : float = inches_to_mm(0.500) # TBC
 
     def draw(self, offset):
         """Overloaded method.
@@ -371,28 +371,23 @@ class HumbuckerRouting(ParametricPolyPathBase):
 
 if __name__ == '__main__':
     blueprint('Single coil', 'A4')
-    p = SingleCoilEMG()
-    print(p)
-    p.draw(Point(-100., 0.))
-
-    p = SingleCoilDiMarzio()
-    p.draw(Point(-50., 0.))
-
+    offset = Point(0., 0.)
+    SingleCoilEMG().draw(offset)
+    SingleCoilRouting().draw(offset)
+    offset = Point(50., 0.)
+    SingleCoilDiMarzio().draw(offset)
+    SingleCoilRouting().draw(offset)
 
     blueprint('Humbuckers', 'A4')
-
     offset = Point(-50., 0.)
     HumbuckerEMG().draw(offset)
     HumbuckerRouting().draw(offset)
-
     offset = Point(0., 0.)
     HumbuckerDiMarzio().draw(offset)
     HumbuckerRouting().draw(offset)
-
     offset = Point(50., 0.)
     HumbuckerDiMarzioF().draw(offset)
     HumbuckerRouting().draw(offset)
-
     offset = Point(100., 0.)
     HumbuckerSeymourDuncan().draw(offset)
     HumbuckerRouting().draw(offset)
