@@ -89,7 +89,17 @@ class SingleCoilBase(PickupBase):
         """Overloaded method.
         """
         self._draw_contour(self.inner_length, self.inner_width, offset)
-        self._draw_contour(self.outer_length, self.outer_width, offset)
+        self._draw_contour(self.inner_length, self.outer_width, offset)
+        if self.outer_length != self.inner_length:
+            w = 0.5 * self.inner_width - 0.25 * self.inner_length
+            d = 6.
+            p1 = Point(0.5 * self.inner_length, w)
+            p2 = Point(p1.x + self.outer_length - self.inner_length, d)
+            p3 = p2.vmove(-2. * d)
+            p4 = Point(0.5 * self.inner_length, -w)
+            Line(p1, p2).draw(offset)
+            Line(p2, p3).draw(offset)
+            Line(p3, p4).draw(offset)
         self.draw_magnets(offset)
         self.draw_screw_holes(offset)
 
@@ -140,7 +150,7 @@ class HumbuckerBase(PickupBase):
 @dataclass
 class SingleCoilEMG(SingleCoilBase):
 
-    """EMG-S, SA, SV, SAV, SLV
+    """Geometry for EMG-S, SA, SV, SAV, SLV
 
     https://www.emgpickups.com/pub/media/Mageants/s/_/s_pickups_0230-0109rd.pdf
     """
@@ -164,9 +174,54 @@ class SingleCoilEMG(SingleCoilBase):
 
 
 @dataclass
+class SingleCoilDiMarzio(SingleCoilBase):
+
+    """Geometry for Di Marzio Strat single coils.
+
+    https://d2emr0qhzqfj88.cloudfront.net/s3fs-public/diagrams/scdimensions_0.pdf
+    """
+
+    inner_length : float = inches_to_mm(0.69)
+    inner_width : float = inches_to_mm(2.74)
+    outer_length : float = inches_to_mm(0.90)
+    outer_width : float = inches_to_mm(3.28)
+    string_spacing : float = inches_to_mm(0.406)
+    screw_spacing : float = inches_to_mm(3.02)
+
+
+
+@dataclass
+class HumbuckerEMG(HumbuckerBase):
+
+    """Geometry for most EMG humbuckers.
+
+    https://www.emgpickups.com/pub/media/Mageants/h/x/hx_0230-0110re.pdf
+    """
+
+    inner_length : float = 38.1
+    inner_width : float = 69.8
+    outer_length : float = inner_length
+    outer_width : float = 83.0
+    string_spacing : float = inches_to_mm(0.383)
+    screw_spacing : float = 78.5
+    wing_length : float = inches_to_mm(0.500)
+
+    def draw(self, offset):
+        """Overloaded method.
+        """
+        self.draw_screw_holes(offset)
+        RoundedRectangle((0., 0.), self.inner_length, self.inner_width, self.corner_radius).draw(offset)
+        self.draw_wings(offset)
+
+
+
+
+@dataclass
 class HumbuckerDiMarzio(HumbuckerBase):
 
-    """
+    """Geometry for most Di Marzio humbuckers.
+
+    https://d2emr0qhzqfj88.cloudfront.net/s3fs-public/diagrams/DMHBdim_0.pdf
     """
 
     inner_length : float = inches_to_mm(1.5)
@@ -179,33 +234,33 @@ class HumbuckerDiMarzio(HumbuckerBase):
 
 
 
+@dataclass
+class HumbuckerDiMarzioF(HumbuckerDiMarzio):
 
+    """Geometry for most Di Marzio humbuckers.
 
-class PickupSlot(Rectangle):
+    https://d2emr0qhzqfj88.cloudfront.net/s3fs-public/diagrams/DMHBdim_0.pdf
+    """
 
-    def __init__(self, width, height, name=None):
-        """Constructor.
-        """
-        super().__init__(Point(0., 0.), width, height, name)
-
-
-
-class SingleCoilSlot(PickupSlot):
-
-    def __init__(self, width=20., height=70., name=None):
-        """
-        """
-        super().__init__(width, height, name)
+    string_spacing : float = inches_to_mm(0.402)
 
 
 
-class HumbuckerSlot(PickupSlot):
+@dataclass
+class HumbuckerSeymourDuncan(HumbuckerBase):
 
-    def __init__(self, width=40., height=88., name=None):
-        """
-        """
-        super().__init__(width, height, name)
+    """Geometry for most Seymour Duncan humbuckers.
 
+    https://www.seymourduncan.com/wp-content/uploads/2019/08/HB-6-String-Uncovered-Short-Magnet-Long-Leg-Bottom-Plate.gif
+    """
+
+    inner_length : float = inches_to_mm(1.438)
+    inner_width : float = inches_to_mm(2.695)
+    outer_length : float = inner_length
+    outer_width : float = inches_to_mm(3.315)
+    string_spacing : float = inches_to_mm(0.385)
+    screw_spacing : float = inches_to_mm(3.063)
+    wing_length : float = inches_to_mm(0.500)
 
 
 
@@ -264,8 +319,8 @@ class HumbuckerRouting(ParametricPolyPathBase):
     * https://www.tdpri.com/threads/humbucker-routing-help.423806/
     """
 
-    DEFAULT_PAR_DICT = {'w1': 20.,
-                        'w2': 40.,
+    DEFAULT_PAR_DICT = {'w1': 17.,
+                        'w2': 41.,
                         'h1': 72.,
                         'h2': 88.,
                         'r': 3.
@@ -318,9 +373,28 @@ if __name__ == '__main__':
     blueprint('Single coil', 'A4')
     p = SingleCoilEMG()
     print(p)
+    p.draw(Point(-100., 0.))
+
+    p = SingleCoilDiMarzio()
     p.draw(Point(-50., 0.))
 
-    p = HumbuckerDiMarzio()
-    p.draw(Point(0., 0.))
+
+    blueprint('Humbuckers', 'A4')
+
+    offset = Point(-50., 0.)
+    HumbuckerEMG().draw(offset)
+    HumbuckerRouting().draw(offset)
+
+    offset = Point(0., 0.)
+    HumbuckerDiMarzio().draw(offset)
+    HumbuckerRouting().draw(offset)
+
+    offset = Point(50., 0.)
+    HumbuckerDiMarzioF().draw(offset)
+    HumbuckerRouting().draw(offset)
+
+    offset = Point(100., 0.)
+    HumbuckerSeymourDuncan().draw(offset)
+    HumbuckerRouting().draw(offset)
 
     plt.show()
