@@ -18,9 +18,166 @@
 """Pick-up facilities.
 """
 
+from dataclasses import dataclass
+
 import numpy as np
 
-from metalute.geometry import Point, Line, Hole, Rectangle, ParametricPolyPathBase, CircularArc
+from metalute.units import inches_to_mm
+from metalute.blueprint import blueprint
+from metalute.matplotlib_ import plt
+from metalute.geometry import Point, Line, Circle, Hole, Rectangle, RoundedRectangle, ParametricPolyPathBase, CircularArc
+
+
+
+@dataclass
+class PickupBase:
+
+    """Base class for a pickup.
+    """
+
+    inner_length : float
+    inner_width : float
+    outer_length : float
+    outer_width : float
+    string_spacing : float
+    screw_spacing : float
+    num_strings : int = 6
+    magnet_diameter : float = 2.25
+    screw_hole_diameter : float = 1.5
+
+    def draw_magnets(self, offset):
+        """Draw the magnets.
+
+        This is relevant for both single-coils and humbuckers.
+        """
+        for i in range(self.num_strings):
+            Circle((0., self.string_spacing * (i - 2.5)), self.magnet_diameter).draw(offset)
+
+    def draw_screw_holes(self, offset):
+        """Draw the holes for the mounting screws.
+        """
+        w = 0.5 * self.screw_spacing
+        Circle((0., w), self.screw_hole_diameter).draw(offset)
+        Circle((0., -w), self.screw_hole_diameter).draw(offset)
+
+    def draw(self, offset):
+        """Not implemented.
+        """
+        raise NotImplementedError
+
+
+
+@dataclass
+class SingleCoilBase(PickupBase):
+
+    """Base class for a single-coil pickup.
+    """
+
+    @staticmethod
+    def _draw_contour(length, width, offset):
+        """
+        """
+        r = 0.5 * length
+        w = 0.5 * width - r
+        l = length - width
+        CircularArc((0., w), r, 0., 180.).draw(offset).\
+            connecting_line(-l).draw(offset).\
+            connecting_circular_arc(r, 180.).draw(offset).\
+            connecting_line(-l).draw(offset)
+
+    def draw(self, offset):
+        """Overloaded method.
+        """
+        self._draw_contour(self.inner_length, self.inner_width, offset)
+        self._draw_contour(self.outer_length, self.outer_width, offset)
+        self.draw_magnets(offset)
+        self.draw_screw_holes(offset)
+
+
+@dataclass
+class HumbuckerBase(PickupBase):
+
+    """Base class for a humbucker.
+    """
+
+    wing_length : float = 12.
+    corner_radius : float = 3.
+
+    def draw_wings(self, offset):
+        """
+        """
+        w = 0.5 * (self.outer_width - self.inner_width) - self.corner_radius
+        l = self.wing_length - 2. * self.corner_radius
+        p = Point(0.5 * self.wing_length, 0.5 * self.inner_width)
+        Line(p, p.vmove(w)).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(l).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(w).draw(offset)
+        p = Point(0.5 * self.wing_length, -0.5 * self.inner_width)
+        Line(p, p.vmove(-w)).draw(offset).\
+            connecting_circular_arc(-self.corner_radius, -90.).draw(offset).\
+            connecting_line(-l).draw(offset).\
+            connecting_circular_arc(-self.corner_radius, -90.).draw(offset).\
+            connecting_line(-w).draw(offset)
+
+    def draw(self, offset):
+        """Overloaded method.
+        """
+        l = 0.5 * self.inner_length
+        w = self.inner_width
+        d = Point(0.5 * l, 0.)
+        SingleCoilBase._draw_contour(l, w, offset - d)
+        self.draw_magnets(offset - d)
+        SingleCoilBase._draw_contour(l, w, offset + d)
+        self.draw_magnets(offset + d)
+        self.draw_screw_holes(offset)
+        RoundedRectangle((0., 0.), self.inner_length, self.inner_width, self.corner_radius).draw(offset)
+        self.draw_wings(offset)
+
+
+
+@dataclass
+class SingleCoilEMG(SingleCoilBase):
+
+    """EMG-S, SA, SV, SAV, SLV
+
+    https://www.emgpickups.com/pub/media/Mageants/s/_/s_pickups_0230-0109rd.pdf
+    """
+
+    inner_length : float = 17.78
+    inner_width : float = 69.85
+    outer_length : float = inner_length
+    outer_width : float = 83.3
+    string_spacing : float = 10.46
+    screw_spacing : float = 76.2
+
+    def draw(self, offset):
+        """Overloaded method.
+
+        We overload this because the magnets are hidden by the plastic cover.
+        """
+        self._draw_contour(self.inner_length, self.inner_width, offset)
+        self._draw_contour(self.outer_length, self.outer_width, offset)
+        self.draw_screw_holes(offset)
+
+
+
+@dataclass
+class HumbuckerDiMarzio(HumbuckerBase):
+
+    """
+    """
+
+    inner_length : float = inches_to_mm(1.5)
+    inner_width : float = inches_to_mm(2.7)
+    outer_length : float = inner_length
+    outer_width : float = inches_to_mm(3.32)
+    string_spacing : float = inches_to_mm(0.383)
+    screw_spacing : float = inches_to_mm(3.1)
+    wing_length : float = inches_to_mm(0.515)
+
+
 
 
 
@@ -154,3 +311,16 @@ class HumbuckerRouting(ParametricPolyPathBase):
         p4 = line11.end_point()
         line12 = Line(p4, p4.hmove(d1))
         return locals()
+
+
+
+if __name__ == '__main__':
+    blueprint('Single coil', 'A4')
+    p = SingleCoilEMG()
+    print(p)
+    p.draw(Point(-50., 0.))
+
+    p = HumbuckerDiMarzio()
+    p.draw(Point(0., 0.))
+
+    plt.show()

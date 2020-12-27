@@ -45,6 +45,21 @@ class GeometricalEntity:
         """
         self.name = name
 
+    @staticmethod
+    def _process_point(point):
+        """
+        """
+        if isinstance(point, Point):
+            return point
+        if isinstance(point, tuple):
+            return Point(*point)
+
+    @staticmethod
+    def _process_points(*points):
+        """
+        """
+        return tuple(GeometricalEntity._process_point(point) for point in points)
+
     def text_info(self) -> str:
         """Basic textual information for the entity.
 
@@ -227,7 +242,7 @@ class PolyLine(Path):
     def __init__(self, *points, name: str = None):
         """Constructor.
         """
-        self.points = points
+        self.points = self._process_points(*points)
         super().__init__(name)
 
     def start_point(self):
@@ -252,6 +267,7 @@ class PolyLine(Path):
         y = [point.y + offset.y for point in self.points]
         line = matplotlib.lines.Line2D(x, y, **kwargs)
         plt.gca().add_line(line)
+        return self
 
 
 
@@ -268,6 +284,40 @@ class Rectangle(PolyLine):
         p3 = p2.move(width, 180.)
         p4 = p3.move(height, 90.)
         super().__init__(p1, p2, p3, p4, p1, name=name)
+
+
+
+class RoundedRectangle(GeometricalEntity):
+
+    """
+    """
+
+    def __init__(self, center, width, height, corner_radius, name: str = None):
+        """Constructor.
+        """
+        self.center = self._process_point(center)
+        self.width = width
+        self.height = height
+        self.corner_radius = corner_radius
+
+    def draw(self, offset):
+        """
+        """
+        w = 0.5 * self.width - self.corner_radius
+        h = 0.5 * self.height - self.corner_radius
+        lw = self.width - 2. * self.corner_radius
+        lh = self.height - 2. * self.corner_radius
+        print(w, h)
+        CircularArc((w, h), self.corner_radius, 0., 90.).draw(offset).\
+            connecting_line(lw).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(lh).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(lw).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(lh).draw(offset)
+        return self
+
 
 
 
@@ -341,7 +391,7 @@ class Circle(Path):
         """Constructor.
         """
         super().__init__(name)
-        self.center = center
+        self.center = self._process_point(center)
         self.radius = radius
 
     def diameter(self):
@@ -355,6 +405,7 @@ class Circle(Path):
         xy = (self.center + offset).xy()
         circle = matplotlib.patches.Circle(xy, self.radius, fill=False, **kwargs)
         plt.gca().add_patch(circle)
+        return self
 
 
 
@@ -564,6 +615,7 @@ class CircularArc(Circle):
             theta1, theta2 = theta2, theta1
         arc = matplotlib.patches.Arc(xy, d, d, 0., theta1, theta2, **kwargs)
         plt.gca().add_patch(arc)
+        return self
 
 
 
