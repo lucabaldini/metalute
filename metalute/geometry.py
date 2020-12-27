@@ -387,17 +387,18 @@ class Hole(Circle):
     specifically for 2-d technical drafting.
     """
 
-    def __init__(self, center, diameter: float, name: str = None):
+    def __init__(self, center, diameter: float, cross_scale=1.5, name: str = None):
         """Constructor.
         """
         super().__init__(center, 0.5 * diameter, name)
+        self.cross_scale = cross_scale
 
     def draw(self, offset, **kwargs):
         """Draw method.
         """
         super().draw(offset, **kwargs)
         kwargs.update(color='black')
-        Cross(self.center, 1.5 * self.radius).draw(offset, **kwargs)
+        Cross(self.center, self.cross_scale * self.radius).draw(offset, **kwargs)
 
 
 

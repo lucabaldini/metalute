@@ -20,7 +20,7 @@
 
 import numpy as np
 
-from metalute.geometry import Point, Line, Rectangle, ParametricPolyPathBase, CircularArc
+from metalute.geometry import Point, Line, Hole, Rectangle, ParametricPolyPathBase, CircularArc
 
 
 
@@ -77,13 +77,17 @@ class SingleCoilRouting(ParametricPolyPathBase):
         d2 = self.w - 2. * self.r
         c = self.anchor + Point(0.5 * self.w - self.r, 0.5 * self.h - self.r)
         arc1 = CircularArc(c, self.r, 90., -90.)
+        hole1 = Hole(arc1.center, 2. * self.r, 1.)
         line1 = arc1.connecting_line(d1)
         arc2 = line1.connecting_circular_arc(-self.r, -90.)
+        hole2 = Hole(arc2.center, 2. * self.r, 1.)
         line2 = arc2.connecting_line(-d2)
         arc3 = line2.connecting_circular_arc(-self.r, -90.)
+        hole3 = Hole(arc3.center, 2. * self.r, 1.)
         line3 = arc3.connecting_line(-d1)
         arc4 = line3.connecting_circular_arc(-self.r, -90.)
-        line4 = arc4.connecting_line(-d2)        
+        hole4 = Hole(arc4.center, 2. * self.r, 1.)
+        line4 = arc4.connecting_line(-d2)
         return locals()
 
 
@@ -107,7 +111,7 @@ class HumbuckerRouting(ParametricPolyPathBase):
                         'w2': 40.,
                         'h1': 72.,
                         'h2': 88.,
-                        'r': 4.
+                        'r': 3.
                         }
 
     def construct(self):
@@ -118,26 +122,34 @@ class HumbuckerRouting(ParametricPolyPathBase):
         d3 = self.w1 - 2. * self.r
         c = self.anchor + Point(0.5 * self.w2 - self.r, 0.5 * self.h1 - self.r)
         arc1 = CircularArc(c, self.r, 90., -90.)
+        hole1 = Hole(arc1.center, 2. * self.r, 1.)
         line1 = arc1.connecting_line(self.h1 - 2. * self.r)
         arc2 = line1.connecting_circular_arc(-self.r, -90.)
+        hole2 = Hole(arc2.center, 2. * self.r, 1.)
         line2 = arc2.connecting_line(-d1)
         p1 = line2.end_point()
         line3 = Line(p1, p1.vmove(-d2))
         arc3 = line3.connecting_circular_arc(-self.r, -90.)
+        hole3 = Hole(arc3.center, 2. * self.r, 1.)
         line4 = arc3.connecting_line(-d3)
         arc4 = line4.connecting_circular_arc(-self.r, -90.)
+        hole4 = Hole(arc4.center, 2. * self.r, 1.)
         line5 = arc4.connecting_line(-d2)
         p2 = line5.end_point()
         line6 = Line(p2, p2.hmove(-d1))
         arc5 = line6.connecting_circular_arc(-self.r, -90.)
+        hole5 = Hole(arc5.center, 2. * self.r, 1.)
         line7 = arc5.connecting_line(-self.h1 + 2. * self.r)
         arc6 = line7.connecting_circular_arc(-self.r, -90.)
+        hole6 = Hole(arc6.center, 2. * self.r, 1.)
         line8 = arc6.connecting_line(-d1)
         p3 = line8.end_point()
         line9 = Line(p3, p3.vmove(d2))
         arc7 = line9.connecting_circular_arc(-self.r, -90.)
+        hole7 = Hole(arc7.center, 2. * self.r, 1.)
         line10 = arc7.connecting_line(-d3)
         arc8 = line10.connecting_circular_arc(-self.r, -90.)
+        hole8 = Hole(arc8.center, 2. * self.r, 1.)
         line11 = arc8.connecting_line(-d2)
         p4 = line11.end_point()
         line12 = Line(p4, p4.hmove(d1))
