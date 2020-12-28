@@ -279,6 +279,7 @@ class Rectangle(PolyLine):
     def __init__(self, center, width, height, name: str = None):
         """Constructor.
         """
+        center = self._process_point(center)
         p1 = center + Point(0.5 * width, 0.5 * height)
         p2 = p1.move(height, -90.)
         p3 = p2.move(width, 180.)

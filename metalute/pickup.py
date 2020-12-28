@@ -18,7 +18,7 @@
 """Pick-up facilities.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 import numpy as np
 
@@ -75,7 +75,10 @@ class SingleCoilBase(PickupBase):
 
     @staticmethod
     def _draw_contour(length, width, offset):
-        """
+        """Draw the contour of the pickup body.
+
+        This is factored out as a staticmethod because it will be reused in
+        drawing humbukers.
         """
         r = 0.5 * length
         w = 0.5 * width - r
@@ -104,6 +107,7 @@ class SingleCoilBase(PickupBase):
         self.draw_screw_holes(offset)
 
 
+
 @dataclass
 class HumbuckerBase(PickupBase):
 
@@ -114,7 +118,7 @@ class HumbuckerBase(PickupBase):
     corner_radius : float = 3.
 
     def draw_wings(self, offset):
-        """
+        """Draw the hanging metal wings with the screw holes.
         """
         w = 0.5 * (self.outer_width - self.inner_width) - self.corner_radius
         l = self.wing_length - 2. * self.corner_radius
@@ -237,7 +241,7 @@ class HumbuckerDiMarzio(HumbuckerBase):
 @dataclass
 class HumbuckerDiMarzioF(HumbuckerDiMarzio):
 
-    """Geometry for most Di Marzio humbuckers.
+    """Geometry for most Di Marzio F-spaced humbuckers.
 
     https://d2emr0qhzqfj88.cloudfront.net/s3fs-public/diagrams/DMHBdim_0.pdf
     """
@@ -264,108 +268,113 @@ class HumbuckerSeymourDuncan(HumbuckerBase):
 
 
 
-class SingleCoilRouting(ParametricPolyPathBase):
+@dataclass
+class RoutingBase:
+
+    """
+    """
+
+    def draw_parameters(self, offset, line_spacing=6.):
+        """
+        """
+        y = 0.
+        params = asdict(self)
+        keys = list(params.keys())
+        keys.reverse()
+        for key in keys:
+            value = params[key]
+            key = key.replace('_', ' ')
+            plt.text(offset.x, offset.y - y, f'{key} = {value} mm')
+            y -= line_spacing
+
+
+
+@dataclass
+class SingleCoilRouting(RoutingBase):
 
     """Class for a parametric routing template for a single-coil pickup.
 
     The dimensions of the various available routings vary, and the default
     parameters for this object are a more or less sensible compilation based
     on both web resources and direct measurements.
-
-    A few pointers:
-
-    * https://www.reddit.com/r/Luthier/comments/db76l6/single_coil_strat_routing_template_dimensions/
     """
 
-    DEFAULT_PAR_DICT = {'w': 20.,
-                        'h': 88.,
-                        'r': 9.999999999999
-                        }
+    inner_length : float = 21.
+    outer_length : float = 27.
+    width : float = 87.
+    flat_width : float = 18.
 
-    def construct(self):
-        """Overloaded method.
+    def draw(self, offset):
         """
-        d1 = self.h - 2. * self.r
-        d2 = self.w - 2. * self.r
-        c = self.anchor + Point(0.5 * self.w - self.r, 0.5 * self.h - self.r)
-        arc1 = CircularArc(c, self.r, 90., -90.)
-        hole1 = Hole(arc1.center, 2. * self.r, 1.)
-        line1 = arc1.connecting_line(d1)
-        arc2 = line1.connecting_circular_arc(-self.r, -90.)
-        hole2 = Hole(arc2.center, 2. * self.r, 1.)
-        line2 = arc2.connecting_line(-d2)
-        arc3 = line2.connecting_circular_arc(-self.r, -90.)
-        hole3 = Hole(arc3.center, 2. * self.r, 1.)
-        line3 = arc3.connecting_line(-d1)
-        arc4 = line3.connecting_circular_arc(-self.r, -90.)
-        hole4 = Hole(arc4.center, 2. * self.r, 1.)
-        line4 = arc4.connecting_line(-d2)
-        return locals()
+        """
+        radius = 0.5 * self.inner_length
+        a = self.outer_length - self.inner_length
+        b = 0.5 * (self.width - self.flat_width) - radius
+        theta = (-b + np.sqrt(b**2. + 2 * a * radius)) / radius
+        l = np.sqrt((a + 0.5 * radius * theta**2.)**2. + (b + radius * theta)**2.)
+        p = Point(0., 0.5 * self.width - radius)
+        line = CircularArc(p, radius, 0., 180. - np.degrees(theta)).draw(offset).\
+            connecting_line(l).draw(offset)
+        p = line.end_point()
+        Line(p, p.vmove(-self.flat_width)).draw(offset)
+        p = Point(0., - 0.5 * self.width + radius)
+        line = CircularArc(p, radius, 0., -180. + np.degrees(theta)).draw(offset).\
+            connecting_line(l).draw(offset)
+        p = p.hmove(0.5 * self.inner_length)
+        Line(p, p.vmove(self.width - 2. * radius)).draw(offset)
 
 
 
-
-class HumbuckerRouting(ParametricPolyPathBase):
+@dataclass
+class HumbuckerRouting(RoutingBase):
 
     """Class for a parametric routing template for a humbucking pickup.
 
     The dimensions of the various available routings vary, and the default
     parameters for this object are a more or less sensible compilation based
     on both web resources and direct measurements.
-
-    A few pointers:
-
-    * https://shoppartsland.com/pickup-routing-template-humbucker/
-    * https://www.tdpri.com/threads/humbucker-routing-help.423806/
     """
 
-    DEFAULT_PAR_DICT = {'w1': 17.,
-                        'w2': 41.,
-                        'h1': 72.,
-                        'h2': 88.,
-                        'r': 3.
-                        }
+    length : float = 41.
+    inner_width : float = 72.
+    outer_width : float = 87.
+    wing_length : float = 16.
+    corner_radius : float = 3.
 
-    def construct(self):
-        """Overloaded method.
+    def _draw_cap(self, start_point, start_phi, d1, d2, offset):
+        """convenience function to draw a half rectangle with rounded borders.
         """
-        d1 = 0.5 * (self.w2 - self.w1) - self.r
-        d2 = 0.5 * (self.h2 - self.h1) - self.r
-        d3 = self.w1 - 2. * self.r
-        c = self.anchor + Point(0.5 * self.w2 - self.r, 0.5 * self.h1 - self.r)
-        arc1 = CircularArc(c, self.r, 90., -90.)
-        hole1 = Hole(arc1.center, 2. * self.r, 1.)
-        line1 = arc1.connecting_line(self.h1 - 2. * self.r)
-        arc2 = line1.connecting_circular_arc(-self.r, -90.)
-        hole2 = Hole(arc2.center, 2. * self.r, 1.)
-        line2 = arc2.connecting_line(-d1)
-        p1 = line2.end_point()
-        line3 = Line(p1, p1.vmove(-d2))
-        arc3 = line3.connecting_circular_arc(-self.r, -90.)
-        hole3 = Hole(arc3.center, 2. * self.r, 1.)
-        line4 = arc3.connecting_line(-d3)
-        arc4 = line4.connecting_circular_arc(-self.r, -90.)
-        hole4 = Hole(arc4.center, 2. * self.r, 1.)
-        line5 = arc4.connecting_line(-d2)
-        p2 = line5.end_point()
-        line6 = Line(p2, p2.hmove(-d1))
-        arc5 = line6.connecting_circular_arc(-self.r, -90.)
-        hole5 = Hole(arc5.center, 2. * self.r, 1.)
-        line7 = arc5.connecting_line(-self.h1 + 2. * self.r)
-        arc6 = line7.connecting_circular_arc(-self.r, -90.)
-        hole6 = Hole(arc6.center, 2. * self.r, 1.)
-        line8 = arc6.connecting_line(-d1)
-        p3 = line8.end_point()
-        line9 = Line(p3, p3.vmove(d2))
-        arc7 = line9.connecting_circular_arc(-self.r, -90.)
-        hole7 = Hole(arc7.center, 2. * self.r, 1.)
-        line10 = arc7.connecting_line(-d3)
-        arc8 = line10.connecting_circular_arc(-self.r, -90.)
-        hole8 = Hole(arc8.center, 2. * self.r, 1.)
-        line11 = arc8.connecting_line(-d2)
-        p4 = line11.end_point()
-        line12 = Line(p4, p4.hmove(d1))
-        return locals()
+        line = Line(start_point, start_point.move(d1, start_phi)).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(d2).draw(offset).\
+            connecting_circular_arc(self.corner_radius, 90.).draw(offset).\
+            connecting_line(d1).draw(offset)
+        return line
+
+    def draw(self, offset, drilling_holes=False):
+        """Draw the routing.
+        """
+        l1 = 0.5 * (self.length - self.wing_length) - self.corner_radius
+        l2 = self.wing_length - 2. * self.corner_radius
+        w1 = self.inner_width - 2. * self.corner_radius
+        w2 = 0.5 * (self.outer_width - self.inner_width) - self.corner_radius
+        p = Point(0.5 * self.wing_length, 0.5 * self.inner_width)
+        line = self._draw_cap(p, 90., w2, l2, offset)
+        p = line.end_point()
+        line = self._draw_cap(p, 180., l1, w1, offset)
+        p = line.end_point()
+        line = self._draw_cap(p, -90., w2, l2, offset)
+        p = line.end_point()
+        line = self._draw_cap(p, 0., l1, w1, offset)
+        if drilling_holes:
+            l = self.length - 2. * self.corner_radius
+            w = self.inner_width - 2. * self.corner_radius
+            for p in Rectangle((0., 0.), l, w).points:
+                Hole(p, 2 * self.corner_radius, 1.).draw(offset)
+            l = self.wing_length - 2. * self.corner_radius
+            w = self.outer_width - 2. * self.corner_radius
+            for p in Rectangle((0., 0.), l, w).points:
+                Hole(p, 2 * self.corner_radius, 1.).draw(offset)
 
 
 
@@ -380,13 +389,10 @@ if __name__ == '__main__':
 
     blueprint('Humbuckers', 'A4')
     offset = Point(-75., 0.)
-    HumbuckerEMG().draw(offset)
-    HumbuckerRouting().draw(offset)
-    offset = Point(-25., 0.)
     HumbuckerDiMarzio().draw(offset)
     HumbuckerRouting().draw(offset)
-    offset = Point(25., 0.)
-    HumbuckerDiMarzioF().draw(offset)
+    offset = Point(-0., 0.)
+    HumbuckerEMG().draw(offset)
     HumbuckerRouting().draw(offset)
     offset = Point(75., 0.)
     HumbuckerSeymourDuncan().draw(offset)

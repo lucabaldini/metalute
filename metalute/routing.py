@@ -52,13 +52,7 @@ class RoutingTemplateBase:
         Hole(self.center.vmove(-0.5 * self.height + 10.), 3.).draw(offset)
         Hole(self.center.hmove(0.5 * self.width - 10.), 3.).draw(offset)
         Hole(self.center.hmove(-0.5 * self.width + 10.), 3.).draw(offset)
-
-
-    def draw_text(self, offset, text):
-        """
-        """
-        p = Point(-0.45 * self.width, -0.45 * self.height) + offset
-        plt.text(p.x, p.y, text)
+        plt.text(-0.4 * self.width + offset.x, offset.y + 0.4 * self.height, 'https://github.com/lucabaldini/metalute')
 
 
 
@@ -73,12 +67,13 @@ class PickupRoutingTemplate(RoutingTemplateBase):
         super().__init__(width, height)
         self.routing = routing_class(**params)
 
-    def draw(self, offset):
+    def draw(self, offset, **kwargs):
         """
         """
         super().draw(offset)
-        self.routing.draw(offset)
-        #self.draw_text(offset, self.routing.par_dict)
+        self.routing.draw(offset, **kwargs)
+        p = Point(-0.5 * self.width + 10., -0.5 * self.height + 10.)
+        self.routing.draw_parameters(offset + p)
 
 
 
@@ -116,7 +111,7 @@ if __name__ == '__main__':
 
     blueprint('Humbucker Routing Template', 'A4', 'Luca Baldini', orientation='Portrait')
     t = HumbuckerRoutingTemplate()
-    t.draw(Point(0., 0.))
+    t.draw(Point(0., 0.), drilling_holes=True)
     plt.savefig('humbucker_routing_template.pdf')
 
     plt.show()
