@@ -119,13 +119,13 @@ class HumbuckerRoutingTemplate(PickupRoutingTemplateBase):
 
 
 
-class NeckRoutingTemplate(RoutingTemplateBase):
+class NeckPocketRoutingTemplate(RoutingTemplateBase):
 
     """Neck routing template.
     """
 
-    LENGTH=280.
-    WIDTH=140.
+    LENGTH = 280.
+    WIDTH = 140.
 
 
 
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     HumbuckerRoutingTemplate().draw(offset, drilling_holes=True)
     plt.savefig('humbucker_routing_template.pdf')
 
-    blueprint('Neck Routing Template', 'A3', 'Luca Baldini', orientation='Landscape')
-    NeckRoutingTemplate().draw(offset)
+    blueprint('Neck Pocket Routing Template', 'A3', 'Luca Baldini', orientation='Landscape')
+    NeckPocketRoutingTemplate().draw(offset)
 
     plt.show()
