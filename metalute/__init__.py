@@ -35,6 +35,7 @@ def _join(*args) -> str:
     return os.path.join(BASE_FOLDER, *args)
 
 
+GITHUB_URL = 'https://github.com/lucabaldini/metalute'
 ROOT_FOLDER = _join('metalute')
 TEST_FOLDER = _join('tests')
 TEST_DATA_FOLDER = os.path.join(TEST_FOLDER, 'data')

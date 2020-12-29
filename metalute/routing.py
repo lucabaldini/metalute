@@ -20,98 +20,128 @@
 
 import numpy as np
 
+from metalute import GITHUB_URL
 from metalute.matplotlib_ import plt
 from metalute.blueprint import blueprint
 from metalute.geometry import Point, Rectangle, Hole
 from metalute.pickup import SingleCoilRouting, HumbuckerRouting
 
 
+
 class RoutingTemplateBase:
 
-    """
+    """Base class for a routing template.
+
+    This is essentially a rectangle with the center lines and some reference
+    holes.
+
+    Note this class should not be instantiated.
     """
 
-    def __init__(self, width, height):
-        """
-        """
-        self.width = width
-        self.height = height
-        self.center = Point(0., 0.)
+    LENGTH = None
+    WIDTH = None
+    CENTER = Point(0., 0.)
+    BORDER = 10.
 
     def draw(self, offset):
+        """Fundamental draw method.
         """
-        """
-        Rectangle(self.center, self.width, self.height).draw(offset)
-        plt.hlines(0, -0.5 * self.width, 0.5 * self.width)
-        plt.vlines(0, -0.5 * self.height, 0.5 * self.height)
-        Hole(self.center.vmove(0.5 * self.height), 1.5).draw(offset)
-        Hole(self.center.vmove(-0.5 * self.height), 1.5).draw(offset)
-        Hole(self.center.hmove(0.5 * self.width), 1.5).draw(offset)
-        Hole(self.center.hmove(-0.5 * self.width), 1.5).draw(offset)
-        Hole(self.center.vmove(0.5 * self.height - 10.), 3.).draw(offset)
-        Hole(self.center.vmove(-0.5 * self.height + 10.), 3.).draw(offset)
-        Hole(self.center.hmove(0.5 * self.width - 10.), 3.).draw(offset)
-        Hole(self.center.hmove(-0.5 * self.width + 10.), 3.).draw(offset)
-        plt.text(-0.4 * self.width + offset.x, offset.y + 0.4 * self.height, 'https://github.com/lucabaldini/metalute')
+        # The big rectangle.
+        l = 0.5 * self.LENGTH
+        w = 0.5 * self.WIDTH
+        Rectangle(self.CENTER, self.LENGTH, self.WIDTH).draw(offset)
+        # The two center lines.
+        plt.hlines(0, -l, l)
+        plt.vlines(0, -w, w)
+        # Small centering holes.
+        r = 1.5
+        Hole(self.CENTER.vmove(w), r).draw(offset)
+        Hole(self.CENTER.vmove(-w), r).draw(offset)
+        Hole(self.CENTER.hmove(l), r).draw(offset)
+        Hole(self.CENTER.hmove(-l), r).draw(offset)
+        # Bigger centering holes.
+        r = 3.
+        Hole(self.CENTER.vmove(w - self.BORDER), r).draw(offset)
+        Hole(self.CENTER.vmove(-w + self.BORDER), r).draw(offset)
+        Hole(self.CENTER.hmove(l - self.BORDER), r).draw(offset)
+        Hole(self.CENTER.hmove(-l + self.BORDER), r).draw(offset)
+        # And, finally, the branding :-)
+        x = -l + self.BORDER + offset.x
+        y = w - 2. * self.BORDER + offset.y
+        plt.text(x, y, GITHUB_URL)
 
 
 
-class PickupRoutingTemplate(RoutingTemplateBase):
+class PickupRoutingTemplateBase(RoutingTemplateBase):
 
+    """Base class for a pickup routing template.
     """
-    """
 
-    def __init__(self, routing_class, width=125., height=200., **params):
+    LENGTH = 125.
+    WIDTH = 200.
+
+    def __init__(self, routing_class, **params):
+        """Constructor.
         """
-        """
-        super().__init__(width, height)
         self.routing = routing_class(**params)
 
     def draw(self, offset, **kwargs):
-        """
+        """Overloaded method.
         """
         super().draw(offset)
         self.routing.draw(offset, **kwargs)
-        p = Point(-0.5 * self.width + 10., -0.5 * self.height + 10.)
+        p = Point(-0.5 * self.LENGTH + self.BORDER, -0.5 * self.WIDTH + self.BORDER)
         self.routing.draw_parameters(offset + p)
 
 
 
-class SingleCoilRoutingTemplate(PickupRoutingTemplate):
+class SingleCoilRoutingTemplate(PickupRoutingTemplateBase):
 
-    """
-    """
-
-    def __init__(self, width=125., height=200., **params):
-        """
-        """
-        super().__init__(SingleCoilRouting, width, height, **params)
-
-
-
-class HumbuckerRoutingTemplate(PickupRoutingTemplate):
-
-    """
+    """Single-coil pickup routing template.
     """
 
-    def __init__(self, width=125., height=200., **params):
+    def __init__(self, **params):
+        """Constructor.
         """
+        super().__init__(SingleCoilRouting, **params)
+
+
+
+class HumbuckerRoutingTemplate(PickupRoutingTemplateBase):
+
+    """Humbucker pickup routing template.
+    """
+
+    def __init__(self, **params):
+        """Constructor.
         """
-        super().__init__(HumbuckerRouting, width, height, **params)
+        super().__init__(HumbuckerRouting, **params)
+
+
+
+class NeckRoutingTemplate(RoutingTemplateBase):
+
+    """Neck routing template.
+    """
+
+    LENGTH=280.
+    WIDTH=140.
 
 
 
 
 if __name__ == '__main__':
+    offset = Point(0., 0.)
+
     blueprint('Single-coil Routing Template', 'A4', 'Luca Baldini', orientation='Portrait')
-    t = SingleCoilRoutingTemplate()
-    t.draw(Point(0., 0.))
+    SingleCoilRoutingTemplate().draw(offset)
     plt.savefig('single_coil_routing_template.pdf')
 
-
     blueprint('Humbucker Routing Template', 'A4', 'Luca Baldini', orientation='Portrait')
-    t = HumbuckerRoutingTemplate()
-    t.draw(Point(0., 0.), drilling_holes=True)
+    HumbuckerRoutingTemplate().draw(offset, drilling_holes=True)
     plt.savefig('humbucker_routing_template.pdf')
+
+    blueprint('Neck Routing Template', 'A3', 'Luca Baldini', orientation='Landscape')
+    NeckRoutingTemplate().draw(offset)
 
     plt.show()
