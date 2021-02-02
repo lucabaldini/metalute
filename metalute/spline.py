@@ -83,10 +83,10 @@ class ParametricSpline:
 
 
 
-def test_draw(offset=Point(-200, 0.)):
+def test_draw(offset):
     """
     """
-    blueprint('EJ #1', 'A1')#, orientation='Portrait')
+    blueprint(f'EJ #1{offset}', 'A3', orientation='Portrait')
     #body = Body()
     #body.draw(offset)
 
@@ -110,24 +110,18 @@ def test_draw(offset=Point(-200, 0.)):
     h2 = 25.
     w1 = 75.
     x, y = s.calculate_contour(offset, tmin=0., tmax=0.5)
-    mask = abs(y) > h1
+    mask = abs(y - offset.y) > h1
     x = x[mask]
     y = y[mask]
     plt.plot(x, y, color='black')
-    plt.vlines(x[0], h1, h2)
-    plt.hlines(h2, x[0], x[0] + w1)
-    plt.vlines(x[0] + w1, h2, h1)
-    plt.hlines(h1, x[0] + w1, x[-1])
-    x, y = s.calculate_contour(offset, tmin=0.5, tmax=1.)
-    mask = np.logical_and(abs(y) > h1, x - offset.x < 317.)
-    x = x[mask]
-    y = y[mask]
-    plt.plot(x, y, color='black')
-    plt.hlines(-h1, x[0], x[-1] + w1)
-    plt.vlines(x[-1] + w1, -h1, -h2)
-    plt.hlines(-h2, x[-1], x[-1] + w1)
-    plt.vlines(x[-1], -h1, -h2)
+    plt.hlines(h1 + offset.y, x[0], x[-1])
 
+    x, y = s.calculate_contour(offset, tmin=0.5, tmax=1.)
+    mask = np.logical_and(abs(y - offset.y) > h1, x - offset.x < 317.)
+    x = x[mask]
+    y = y[mask]
+    plt.plot(x, y, color='black')
+    plt.hlines(-h1 + offset.y, x[0], x[-1])
 
     p0 = Point(-50., 0.)
     l = Line(p0, p0.move(500., 0.))
@@ -157,6 +151,8 @@ def test_draw(offset=Point(-200, 0.)):
 
 
 if __name__ == '__main__':
-    test_draw()
-    plt.savefig('ej1.pdf')
+    test_draw(Point(-100, 20.))
+    plt.savefig('ej1_left.pdf')
+    test_draw(Point(-300, 20.))
+    plt.savefig('ej1_right.pdf')
     plt.show()
