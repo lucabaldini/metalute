@@ -70,7 +70,52 @@ class JigsawJig(Drawable):
 
 
 
+@dataclass
+class Workbench(Drawable):
+
+    """
+    """
+    width : float = 1000.
+    height : float = 500.
+    base_width : float = 850.
+    base_stud_thickness : float = 25.
+    corner_radius : float = 10.
+    hole_pitch : float = 100.
+    hole_diameter : float = 8.
+    channel_width : float = 8.
+
+    def _draw(self, offset, **kwargs):
+        """Overloaded method.
+        """
+        center = Point(0., 0.)
+        rectangle(center, self.width, self.height, self.corner_radius, offset)
+        d = 0.5 * (self.height - self.base_stud_thickness)
+        rectangle(center.vmove(-d), self.base_width, self.base_stud_thickness, 0., offset, ls='dashed')
+        rectangle(center.vmove(d), self.base_width, self.base_stud_thickness, 0., offset, ls='dashed')
+        d = 0.5 * (self.base_width + self.base_stud_thickness)
+        rectangle(center.hmove(-d), self.base_stud_thickness, self.height, 0., offset, ls='dashed')
+        rectangle(center.hmove(d), self.base_stud_thickness, self.height, 0., offset, ls='dashed')
+        d /= 3.
+        h = self.height - 2. * self.base_stud_thickness
+        rectangle(center.hmove(-d), self.base_stud_thickness, h, 0., offset, ls='dashed')
+        rectangle(center.hmove(d), self.base_stud_thickness, h, 0., offset, ls='dashed')
+        # Hole grid and channels.
+        h = 4. * self.hole_pitch + self.hole_diameter
+        for i in range(-4, 5):
+            for j in range(-2, 3):
+                if i in  [-3, 0, 3]:
+                    p = Point(i * self.hole_pitch, 0.)
+                    rectangle(p, self.channel_width, h, 0.4999 * self.channel_width, offset)
+                else:
+                    c = Point(i * self.hole_pitch, j * self.hole_pitch)
+                    hole(c, self.hole_diameter, offset=offset)
+
+
+
 if __name__ == '__main__':
     blueprint('Jigsaw jig', 'A1')
     JigsawJig().draw()
+
+    blueprint('Workbench', 'A0', orientation='Landscape')
+    Workbench().draw()
     plt.show()

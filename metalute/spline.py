@@ -83,12 +83,11 @@ class ParametricSpline:
 
 
 
-def test_draw():
+def test_draw(offset=Point(-200, 0.)):
     """
     """
-    blueprint('EJ #1', 'A1')
-    offset = Point(-200., 0.)
-    body = Body()
+    blueprint('EJ #1', 'A1')#, orientation='Portrait')
+    #body = Body()
     #body.draw(offset)
 
     x = np.array([0., 15., 50., 125., 200., 230., 250., 280., 300., 325.,
@@ -102,6 +101,10 @@ def test_draw():
     s = ParametricSpline(x, y)
     s.draw(offset)
     #s.draw_points(offset)
+
+    #scale = 1.05
+    #s1 = ParametricSpline(x * scale, y * scale)
+    #s1.draw(offset - Point(8., 0.))
 
     h1 = 52.
     h2 = 25.
@@ -126,25 +129,29 @@ def test_draw():
     plt.vlines(x[-1], -h1, -h2)
 
 
-    p0 = Point(-50., 0)
+    p0 = Point(-50., 0.)
     l = Line(p0, p0.move(500., 0.))
     l.draw(offset)
 
-    p1 = Point(590., 0.)
-    fretboard = Fretboard(num_frets=22, reference_fret=22, width_at_nut=42.,
-                          width_at_reference_fret=56., scale_length=648.)
-    fretboard.draw_top_shape((590., 0.))
-    fretboard.draw_top_frets((590., 0.), indices=False)
-    fretboard.draw_bridge_reference((590., 0.))
+    p1 = Point(200., -200.)
+    l = Line(p1, p1.vmove(400.))
+    l.draw(offset)
 
-    bridge = HardtailBridgeBase()
-    bridge.draw(p1.hmove(-fretboard.scale_length))
+    #p1 = Point(590., 0.)
+    #fretboard = Fretboard(num_frets=22, reference_fret=22, width_at_nut=42.,
+    #                      width_at_reference_fret=56., scale_length=648.)
+    #fretboard.draw_top_shape((590., 0.))
+    #fretboard.draw_top_frets((590., 0.), indices=False)
+    #fretboard.draw_bridge_reference((590., 0.))
 
-    pickup = HumbuckerRouting()
-    pickup.draw(Point(-10., 0.))
+    #bridge = HardtailBridgeBase()
+    #bridge.draw(p1.hmove(-fretboard.scale_length))
 
-    pickup = SingleCoilRouting()
-    pickup.draw(Point(80., 0.))
+    #pickup = HumbuckerRouting()
+    #pickup.draw(Point(-10., 0.))
+
+    #pickup = SingleCoilRouting()
+    #pickup.draw(Point(80., 0.))
 
 
 

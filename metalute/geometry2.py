@@ -263,7 +263,7 @@ def hline(start_point, length, offset=None, **kwargs):
 def vline(start_point, length, offset=None, **kwargs):
     """Draw a vertical line.
     """
-    return Line(start_point, start_point.hmove(length)).draw(offset, **kwargs)
+    return Line(start_point, start_point.vmove(length)).draw(offset, **kwargs)
 
 
 
@@ -293,10 +293,14 @@ class Rectangle(Drawable):
         w = self.width - 2. * self.corner_radius
         h = self.height - 2. * self.corner_radius
         r = self.corner_radius
-        line(p, p.vmove(h)).draw_connecting_arc(r, -90.).draw_connecting_line(w).\
-            draw_connecting_arc(r, -90.).draw_connecting_line(h).\
-            draw_connecting_arc(r, -90.).draw_connecting_line(w).\
-            draw_connecting_arc(r, -90.)
+        line(p, p.vmove(h), **kwargs).\
+            draw_connecting_arc(r, -90., **kwargs).\
+            draw_connecting_line(w, **kwargs).\
+            draw_connecting_arc(r, -90., **kwargs).\
+            draw_connecting_line(h, **kwargs).\
+            draw_connecting_arc(r, -90., **kwargs).\
+            draw_connecting_line(w, **kwargs).\
+            draw_connecting_arc(r, -90., **kwargs)
 
 
 
